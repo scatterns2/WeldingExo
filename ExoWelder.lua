@@ -1,4 +1,13 @@
 
+function _D(...)
+    local t = {'['..debug.getinfo(2, 'l').currentline..']', ...}
+    for i = 1, #t do
+        t[i] = tostring(t[i])
+    end
+    Print("%s", table.concat(t, ' '))
+end
+
+
 Script.Load("lua/Weapons/Weapon.lua")
 Script.Load("lua/LiveMixin.lua")
 Script.Load("lua/Weapons/Marine/ExoWeaponSlotMixin.lua")
@@ -113,7 +122,9 @@ function ExoWelder:OnPrimaryAttack(player)
     
     if not self.timeLastWeldEffect or self.timeLastWeldEffect + kWelderEffectRate < Shared.GetTime() then
     
-       // self:TriggerEffects("welder_muzzle")
+       player:TriggerEffects("exowelder_muzzle", { [kEffectParamScale] = 20 })
+
+
         self.timeLastWeldEffect = Shared.GetTime()
         
     end
@@ -127,7 +138,7 @@ end
 function ExoWelder:OnPrimaryAttackEnd(player)
 
     if self.welding then
-        //self:TriggerEffects("welder_end")
+     player:TriggerEffects("welder_end")
     end
     
     self.welding = false
@@ -173,10 +184,8 @@ function ExoWelder:GetMeleeOffset()
 end
 
 local function PrioritizeDamagedFriends(weapon, player, newTarget, oldTarget)
- return false
-end	
-
-
+    return not oldTarget or (HasMixin(newTarget, "Team") and newTarget:GetTeamNumber() == player:GetTeamNumber() and (HasMixin(newTarget, "Weldable") and newTarget:GetCanBeWelded(weapon)))
+end
 
 function ExoWelder:PerformWeld(player)
 
@@ -225,6 +234,7 @@ function ExoWelder:PerformWeld(player)
     end
     
 end
+
 
 function ExoWelder:GetShowDamageIndicator()
     return true
@@ -336,34 +346,42 @@ function ExoWelder:OnTag(tagName)
 end
 
 
-if Client then
+//if Client then
 
-    local kAttachPoints = { [ExoWeaponHolder.kSlotNames.Left] = "fxnode_l_railgun_muzzle",[ExoWeaponHolder.kSlotNames.Right] = "fxnode_r_railgun_muzzle" }
-    local kMuzzleEffectName = PrecacheAsset("cinematics/marine/welder/welder_muzzle.cinematic")
+  //  local kAttachPoints = { [ExoWeaponHolder.kSlotNames.Left] = "fxnode_l_railgun_muzzle",[ExoWeaponHolder.kSlotNames.Right] = "fxnode_r_railgun_muzzle" }
+   // local kMuzzleEffectName = PrecacheAsset("cinematics/marine/welder/welder_muzzle.cinematic")
 
-    function ExoWelder:OnClientPrimaryAttacking()
+  //  function ExoWelder:OnClientPrimaryAttacking()
     
-        local parent = self:GetParent()
+   //     local parent = self:GetParent()
         
-        if parent then
-            CreateMuzzleCinematic(self,  kMuzzleEffectName, kAttachPoints[self:GetExoWeaponSlot()] , parent)
-        end
+    //    if parent then
+        //    CreateMuzzleCinematic(self,  kMuzzleEffectName, kAttachPoints[self:GetExoWeaponSlot()] , parent)
+       // end
         
-    end
+   // end
 	
-    function ExoWelder:GetIsActive()
-        return true
-    end    
+   // function ExoWelder:GetIsActive()
+    //    return true
+   // end    
           
     
-    function ExoWelder:GetPrimaryAttacking()
-        return self.welding
-    end
+   // function ExoWelder:GetPrimaryAttacking()
+   //     return self.welding
+   // end
     
    
-end
+//end
 
-
+GetEffectManager():AddEffectData("ScattersModEffects", {
+    exowelder_muzzle = {
+        welderMuzzleEffects =
+        {
+            {viewmodel_cinematic = "cinematics/marine/welder/welder_muzzle.cinematic", attach_point = "fxnode_r_railgun_muzzle"},
+            {weapon_cinematic = "cinematics/marine/welder/welder_muzzle.cinematic", attach_point = "fxnode_rrailgunmuzzle"},
+        },
+    },
+})
     
  
     
