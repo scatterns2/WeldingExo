@@ -112,7 +112,7 @@ function GUIProtoBuyMenu:Initialize()
     
     self.modulePanelMap = {}   
     
-       self.modulePanelMap = {
+       local modulePanelMap = {
         leftArm = {
             title = "LEFT ARM",
             dimensionData = { x = 10, y = 10, width = 40, height = 90 },
@@ -199,7 +199,7 @@ function GUIProtoBuyMenu:Initialize()
         },   
      }
 
-    for panelName, panelData in pairs(self.modulePanelMap.leftArm) do
+    for panelName, panelData in pairs(self.modulePanelMap) do
             
             local panelBox = GUIManager:CreateGraphicItem()
         panelBox:SetTexture( "ui/menu/repeating_bg.dds" )
