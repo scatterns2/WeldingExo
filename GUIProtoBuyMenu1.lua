@@ -28,13 +28,14 @@ GUIProtoBuyMenu.kBackgroundHeight = GUIScale(800)
 ------------------------------------------
 local GetIsMouseOver -- ignore this
  
-self.GUIItems = {}
  
 ------------------------------------------ Where to create your stuff
 function GUIProtoBuyMenu:Initialize()
     GUIAnimatedScript.Initialize(self)
     MarineBuy_OnOpen()
-    
+    self.GUIItems = {}
+    self.buttonList = {}
+
     self.mouseOverStates = { }
 
     do self.background = GUIManager:CreateGraphicItem()
@@ -120,85 +121,88 @@ function GUIProtoBuyMenu:Initialize()
               { name = "Welder",
                 powerCost = 50,
                 texturePathMap = {
-                  disabled = "ui/Egg.dds",
-                  normal = "ui/Egg.dds",
-                  hover = "ui/Egg.dds",
-                  selected = "ui/Egg.dds",
+                  disabled = "ui/egg.dds",
+                  normal = "ui/egg.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
                 }
               },
               { name = "Minigun",
                 powerCost = 50,
                 texturePathMap = {
-                  disabled = "ui/Egg.dds",
-                  normal = "ui/Egg.dds",
-                  hover = "ui/Egg.dds",
-                  selected = "ui/Egg.dds",
+                  disabled = "ui/egg.dds",
+                  normal = "ui/egg.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
                 }
               },
+             }, 
               { name = "Railgun",
                 powerCost = 50,
                 texturePathMap = {
-                  disabled = "ui/Egg.dds",
-                  normal = "ui/Egg.dds",
-                  hover = "ui/Egg.dds",
-                  selected = "ui/Egg.dds",
+                  disabled = "ui/egg.dds",
+                  normal = "ui/egg.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
                 }
               },
              { name = "Flamethrower",
                 powerCost = 50,
                 texturePathMap = {
-                  disabled = "ui/Egg.dds",
-                  normal = "ui/Egg.dds",
-                  hover = "ui/Egg.dds",
-                  selected = "ui/Egg.dds",
+                  disabled = "ui/egg.dds",
+                  normal = "ui/egg.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
                 }
               },
           },
           rightArm = {
             title = "RIGHT ARM",
-            dimensionData = { x = 100, y = 100, width = 50, height = 50 },
+            dimensionData = { x =100, y = 100, width = 70, height = 50 },
             moduleButtonDataList = {
               { name = "Welder",
                 powerCost = 50,
                 texturePathMap = {
-                  disabled = "ui/Egg.dds",
-                  normal = "ui/Egg.dds",
-                  hover = "ui/Egg.dds",
-                  selected = "ui/Egg.dds",
+                  disabled = "ui/egg.dds",
+                  normal = "ui/egg.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
                 }
               },
               { name = "Minigun",
                 powerCost = 50,
                 texturePathMap = {
-                  disabled = "ui/Egg.dds",
-                  normal = "ui/Egg.dds",
-                  hover = "ui/Egg.dds",
-                  selected = "ui/Egg.dds",
+                  disabled = "ui/egg.dds",
+                  normal = "ui/egg.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
                 }
               },
               { name = "Railgun",
                 powerCost = 50,
                 texturePathMap = {
-                  disabled = "ui/Egg.dds",
-                  normal = "ui/Egg.dds",
-                  hover = "ui/Egg.dds",
-                  selected = "ui/Egg.dds",
+                  disabled = "ui/egg.dds",
+                  normal = "ui/egg.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
                 }
               },
              { name = "Flamethrower",
                 powerCost = 50,
                 texturePathMap = {
-                  disabled = "ui/Egg.dds",
-                  normal = "ui/Egg.dds",
-                  hover = "ui/Egg.dds",
-                  selected = "ui/Egg.dds",
+                  disabled = "ui/egg.dds",
+                  normal = "ui/egg.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
                     }
                 },
             },
         },
-        },   
+          
      }
 
+     local eggsPerRow = 8
+     
     for panelName, panelData in pairs(self.modulePanelMap) do
             
             local panelBox = GUIManager:CreateGraphicItem()
@@ -240,7 +244,8 @@ function GUIProtoBuyMenu:Initialize()
 
         
         table.insert(self.GUIItems, boxButton)
-        table.insert(self.moduleButtonDataList, boxButton)
+        table.insert(self.buttonList, boxButton)
+
  
         
         local moduleText = GUIManager:CreateTextItem()
@@ -251,11 +256,24 @@ function GUIProtoBuyMenu:Initialize()
         moduleText:SetTextAlignmentX(GUIItem.Align_Min)
         moduleText:SetTextAlignmentY(GUIItem.Align_Max)
         moduleText:SetColor(Color(kMarineFontColor))
-        moduleText:SetText(buttonData.text)
+        moduleText:SetText(moduleButtonData.name)
         boxButton:AddChild(moduleText)
 
         table.insert(self.GUIItems, moduleText)
 
+     /*           local powerText = GUIManager:CreateGraphicItem()
+        powerText:SetFontName( "fonts/AgencyFB_small.fnt" )
+        powerText:SetFontIsBold(true)
+        powerText:SetPosition(Vector(10, 40, 0))
+        powerText:SetAnchor(        GUIItem.Right, GUIItem.Top        )
+        powerText:SetTextAlignmentX(GUIItem.Align_Max)
+        powerText:SetTextAlignmentY(GUIItem.Align_Max)
+        powerText:SetColor(Color(kMarineFontColor))
+        powerText:SetText(moduleButtonData.powerCost)
+        boxButton:AddChild(powerText)
+
+        table.insert(self.GUIItems, powerText)*/
+        
       end
     end    
     
@@ -298,7 +316,7 @@ function GUIProtoBuyMenu:Update(deltaTime)
             button:SetColor( Color(1, 0, 0, 1) )
         end
     
-    end
+   end
 
     
     // todo
