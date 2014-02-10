@@ -110,25 +110,57 @@ function GUIProtoBuyMenu:Initialize()
     
     local buttonDataList = {}
     
-    buttonDataList[1] = { col = Color(1, 0, 0, 1), texture = "ui/egg.dds" }
-    buttonDataList[2] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds" }
+    buttonDataList[1] = { col = Color(1, 0, 0, 1), texture = "ui/egg.dds", text = "Claw"  }
+    buttonDataList[2] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Welder"    }
+    buttonDataList[3] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Minigun"  }
+    buttonDataList[4] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Railgun"  }
+    buttonDataList[5] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Flamethrower"  }
+
+    local eggsPerRow = 8
+
+    self.GUIItems = {}
+
     
     for buttonNum, buttonData in ipairs(buttonDataList) do
 
         local eggButton = GUIManager:CreateGraphicItem()
-        local eggsPerRow = 8
     
-  
-        
-        eggButton:SetPosition(Vector(50+ ((buttonNum-1)%eggsPerRow)*25, 50+math.floor((buttonNum-1)/eggsPerRow)*25, 0 ))
+        eggButton:SetPosition(Vector(50+ ((buttonNum-1)%eggsPerRow)*50, 50+math.floor((buttonNum-1)/eggsPerRow)*25, 0 ))
         eggButton:SetColor( buttonData.col )
+        eggButton:SetTexture (buttonData.texture )
         eggButton:SetSize(Vector( 25, 25, 0 ))
         eggButton:SetTexturePixelCoordinates( 0, 0, 384, 192 )
-          
+        eggButton:SetText( buttonData.text)  
+        eggButton:SetPosition(Vector(50+ ((buttonNum-1)%eggsPerRow)*125, 50+math.floor((buttonNum-1)/eggsPerRow)*25, 0 ))
         self.content:AddChild(eggButton)
 
-        table.insert(buttonDataList, buttonNum)
-   
+        table.insert(self.GUIItems, eggButton)
+
+        
+        local testText = GUIManager:CreateTextItem()
+        testText:SetFontName( "fonts/AgencyFB_small.fnt" )
+        testText:SetFontIsBold(true)
+        testText:SetPosition(Vector(50+ ((buttonNum-1)%eggsPerRow)*125, 50+math.floor((buttonNum-1)/eggsPerRow)*25, 0 ))
+        testText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
+        testText:SetTextAlignmentX(GUIItem.Align_Min)
+        testText:SetTextAlignmentY(GUIItem.Align_Max)
+        testText:SetColor(Color(       0, 1, 0, 1   ))
+        testText:SetText(buttonData.text)
+        self.content:AddChild(eggButton)
+  
+        table.insert(self.GUIItems, eggButton)
+
+  
+        local boxGraphic = GUIManager:CreateGraphicItem()
+        boxGraphic:SetTexture( "ui/menu/repeating_bg.dds" )
+        boxGraphic:SetColor(Color(       1, 0, 0, 1   ))
+        boxGraphic:SetPosition(Vector(10+ ((buttonNum-1)%eggsPerRow)*125, 10+math.floor((buttonNum-1)/eggsPerRow)*25, 0 ))
+        boxGraphic:SetSize(Vector( 25, 25, 0 ))
+        boxGraphic:AddChild(eggButton)
+        
+        table.insert(self.GUIItems, eggButton)
+
+        
     end
    
    
@@ -185,6 +217,10 @@ function GUIProtoBuyMenu:Uninitialize()
     GUI.DestroyItem(self.testText)
     GUI.DestroyItem(self.meowText)
     
+    for itemNum, item in ipairs(self.GUIItems) do
+        GUI.DestroyItem(item)
+    end
+
     
     
 end
