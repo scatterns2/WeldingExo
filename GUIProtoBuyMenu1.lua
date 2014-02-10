@@ -110,9 +110,9 @@ function GUIProtoBuyMenu:Initialize()
     
     
     
-    self.modulePanelMap = {}   
+    self.modulePanelMap = {   
     
-       local modulePanelMap = {
+     
         leftArm = {
             title = "LEFT ARM",
             dimensionData = { x = 10, y = 10, width = 40, height = 90 },
@@ -204,10 +204,10 @@ function GUIProtoBuyMenu:Initialize()
             local panelBox = GUIManager:CreateGraphicItem()
         panelBox:SetTexture( "ui/menu/repeating_bg.dds" )
         panelBox:SetColor(Color( 1, 0, 0, 1   ))
-        panelBox:SetPosition(Vector(dimensionData.x + panelData.dimensionData.y, 0 ))
-        panelBox:SetSize(Vector( dimensionData.width, panelData.dimensionData.height, 0 ))
+        panelBox:SetPosition(Vector(panelData.dimensionData.x , panelData.dimensionData.y, 0 ))
+        panelBox:SetSize(Vector( panelData.dimensionData.width, panelData.dimensionData.height, 0 ))
         //boxButton:AddChild(eggImage)
-        panelBox:AddChild(panelText)
+       
         self.content:AddChild(panelBox)
 
         table.insert(self.GUIItems, panelBox)
@@ -222,8 +222,7 @@ function GUIProtoBuyMenu:Initialize()
         panelText:SetTextAlignmentY(GUIItem.Align_Max)
         panelText:SetColor(Color(kMarineFontColor))
         panelText:SetText(panelData.title)
-        //self.content:AddChild(eggButton)
-  
+        panelBox:AddChild(panelText)
         table.insert(self.GUIItems, panelText)
         
         
@@ -237,7 +236,6 @@ function GUIProtoBuyMenu:Initialize()
         boxButton:SetColor(Color(       1, 0, 0, 1   ))
         boxButton:SetPosition(Vector(10+ ((moduleButtonNum-1)%eggsPerRow)*150, 10+math.floor((moduleButtonNum-1)/eggsPerRow)*150, 0 ))
         boxButton:SetSize(Vector( 50, 50, 0 ))
-        boxButton:AddChild(moduleText)
         self.content:AddChild(boxButton)
 
         
@@ -254,7 +252,8 @@ function GUIProtoBuyMenu:Initialize()
         moduleText:SetTextAlignmentY(GUIItem.Align_Max)
         moduleText:SetColor(Color(kMarineFontColor))
         moduleText:SetText(buttonData.text)
-  
+        boxButton:AddChild(moduleText)
+
         table.insert(self.GUIItems, moduleText)
 
       end
