@@ -110,22 +110,24 @@ function GUIProtoBuyMenu:Initialize()
     
     local buttonDataList = {}
     
+    buttonDataList[1] = { col = Color(1, 0, 0, 1), texture = "ui/egg.dds" }
+    buttonDataList[2] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds" }
+    
     for buttonNum, buttonData in ipairs(buttonDataList) do
 
-    local eggButton = GUIManager:CreateGraphicItem()
-
+        local eggButton = GUIManager:CreateGraphicItem()
+        local eggsPerRow = 8
     
-    buttonDataList[1] = { col = Color(1, 0, 0, 1), texture = "ui/Egg.dds" }
-    buttonDataList[2] = { col = Color(1, 1, 1, 1), texture = "ui/Egg.dds" }
-    
-    eggButton:SetPosition(Vector(50+ ((buttonNum-1)%eggsPerRow)*25, 50+math.floor((buttonNum-1)/eggsPerRow)*25, 0 ))
-    eggButton:SetColor( buttonData.col )
-    eggButton:SetSize(Vector( 25, 25, 0 ))
-    eggButton:SetTexturePixelCoordinates( 0, 0, 384, 192 )
+  
+        
+        eggButton:SetPosition(Vector(50+ ((buttonNum-1)%eggsPerRow)*25, 50+math.floor((buttonNum-1)/eggsPerRow)*25, 0 ))
+        eggButton:SetColor( buttonData.col )
+        eggButton:SetSize(Vector( 25, 25, 0 ))
+        eggButton:SetTexturePixelCoordinates( 0, 0, 384, 192 )
           
-    self.content:AddChild(eggButton)
+        self.content:AddChild(eggButton)
 
-    table.insert(buttonDataList, buttonNum)
+        table.insert(buttonDataList, buttonNum)
    
     end
    
