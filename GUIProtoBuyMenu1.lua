@@ -28,7 +28,7 @@ GUIProtoBuyMenu.kBackgroundHeight = GUIScale(800)
 ------------------------------------------
 local GetIsMouseOver -- ignore this
  
- 
+self.GUIItems = {}
  
 ------------------------------------------ Where to create your stuff
 function GUIProtoBuyMenu:Initialize()
@@ -109,7 +109,7 @@ function GUIProtoBuyMenu:Initialize()
     self.content:AddChild(self.meowText)*/
     
     
-    
+
     self.modulePanelMap = {   
     
      
