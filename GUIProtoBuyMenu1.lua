@@ -22,8 +22,8 @@ Script.Load("lua/GUIAnimatedScript.lua")
 class 'GUIProtoBuyMenu' (GUIAnimatedScript)
 ------------------------------------------ Various handy variables
  
-GUIProtoBuyMenu.kBackgroundWidth = GUIScale(600)
-GUIProtoBuyMenu.kBackgroundHeight = GUIScale(710)
+GUIProtoBuyMenu.kBackgroundWidth = GUIScale(800)
+GUIProtoBuyMenu.kBackgroundHeight = GUIScale(800)
  GUIProtoBuyMenu.kBackgroundXOffset = GUIScale(0)
 ------------------------------------------
 local GetIsMouseOver -- ignore this
@@ -69,7 +69,7 @@ function GUIProtoBuyMenu:Initialize()
     end
     self.background:AddChild(self.content)
     
-    do self.testText = GUIManager:CreateTextItem()
+  /*  do self.testText = GUIManager:CreateTextItem()
         self.testText:SetFontName( "fonts/AgencyFB_small.fnt" )
         self.testText:SetFontIsBold(true)
         self.testText:SetPosition(Vector(
@@ -85,10 +85,10 @@ function GUIProtoBuyMenu:Initialize()
         ))
         self.testText:SetText("Hello!")
     end
-    self.content:AddChild(self.testText)
+    self.content:AddChild(self.testText)*/
     
     
-    do self.meowText = GUIManager:CreateTextItem()
+    /*do self.meowText = GUIManager:CreateTextItem()
         self.meowText:SetFontName( "fonts/AgencyFB_small.fnt" )
         self.meowText:SetFontIsBold(true)
         self.meowText:SetPosition(Vector(
@@ -105,7 +105,7 @@ function GUIProtoBuyMenu:Initialize()
         self.meowText:SetText("Meow!")
     end
     
-    self.content:AddChild(self.meowText)
+    self.content:AddChild(self.meowText)*/
     
     
     local buttonDataList = {}
@@ -115,30 +115,32 @@ function GUIProtoBuyMenu:Initialize()
     buttonDataList[3] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Minigun"  }
     buttonDataList[4] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Railgun"  }
     buttonDataList[5] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Flamethrower"  }
-   // buttonDataList[6] = { col = Color(1, 0, 0, 1), texture = "ui/egg.dds", text = "Claw"  }
-   // buttonDataList[7] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Shield"    }
-   // buttonDataList[8] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Minigun"  }
-    //buttonDataList[9] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Railgun"  }
-   // buttonDataList[10] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Flamethrower"  }
+    buttonDataList[6] = { col = Color(1, 0, 0, 1), texture = "ui/egg.dds", text = "Claw"  }
+    buttonDataList[7] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Shield"    }
+    buttonDataList[8] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Minigun"  }
+    buttonDataList[9] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Railgun"  }
+    buttonDataList[10] = { col = Color(1, 1, 1, 1), texture = "ui/egg.dds", text = "Flamethrower"  }
+   
     local eggsPerRow = 5
 
     self.GUIItems = {}
+    self.buttonList = {}
 
     
     for buttonNum, buttonData in ipairs(buttonDataList) do
 
-        local eggButton = GUIManager:CreateGraphicItem()
+        local eggImage = GUIManager:CreateGraphicItem()
     
-        eggButton:SetPosition(Vector(10, 10, 0))
-        eggButton:SetColor( buttonData.col )
-        eggButton:SetTexture (buttonData.texture )
-        eggButton:SetSize(Vector( 25, 25, 0 ))
-        eggButton:SetTexturePixelCoordinates( 0, 0, 384, 192 )
-        eggButton:SetText( buttonData.text)  
-        eggButton:SetPosition(Vector(50+ ((buttonNum-1)%eggsPerRow)*35, 50+math.floor((buttonNum-1)/eggsPerRow)*35, 0 ))
-        //self.content:AddChild(eggButton)
+        eggImage:SetPosition(Vector(10, 10, 0))
+        eggImage:SetColor( buttonData.col )
+        eggImage:SetTexture (buttonData.texture )
+        eggImage:SetSize(Vector( 25, 25, 0 ))
+        eggImage:SetTexturePixelCoordinates( 0, 0, 384, 192 )
+        //eggButton:SetText( buttonData.text)  
+       // eggButton:SetPosition(Vector(50+ ((buttonNum-1)%eggsPerRow)*35, 50+math.floor((buttonNum-1)/eggsPerRow)*35, 0 ))
+        //self.content:AddChild(eggImage)
 
-        table.insert(self.GUIItems, eggButton)
+        table.insert(self.GUIItems, eggImage)
 
         
         local testText = GUIManager:CreateTextItem()
@@ -148,24 +150,25 @@ function GUIProtoBuyMenu:Initialize()
         testText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
         testText:SetTextAlignmentX(GUIItem.Align_Min)
         testText:SetTextAlignmentY(GUIItem.Align_Max)
-        testText:SetColor(Color(       0, 1, 0, 1   ))
+        testText:SetColor(Color(kMarineFontColor))
         testText:SetText(buttonData.text)
         //self.content:AddChild(eggButton)
   
         table.insert(self.GUIItems, testText)
 
   
-        local boxGraphic = GUIManager:CreateGraphicItem()
-        boxGraphic:SetTexture( "ui/menu/repeating_bg.dds" )
-        boxGraphic:SetColor(Color(       1, 0, 0, 1   ))
-        boxGraphic:SetPosition(Vector(10+ ((buttonNum-1)%eggsPerRow)*125, 10+math.floor((buttonNum-1)/eggsPerRow)*25, 0 ))
-        boxGraphic:SetSize(Vector( 25, 25, 0 ))
-        boxGraphic:AddChild(eggButton)
-        boxGraphic:AddChild(testText)
-        self.content:AddChild(boxGraphic)
+        local boxButton = GUIManager:CreateGraphicItem()
+        boxButton:SetTexture( "ui/menu/repeating_bg.dds" )
+        boxButton:SetColor(Color(       1, 0, 0, 1   ))
+        boxButton:SetPosition(Vector(10+ ((buttonNum-1)%eggsPerRow)*150, 10+math.floor((buttonNum-1)/eggsPerRow)*150, 0 ))
+        boxButton:SetSize(Vector( 50, 50, 0 ))
+        boxButton:AddChild(eggImage)
+        boxButton:AddChild(testText)
+        self.content:AddChild(boxButton)
 
         
-        table.insert(self.GUIItems, boxGraphic)
+        table.insert(self.GUIItems, boxButton)
+        table.insert(self.buttonList, boxButton)
 
         
     end
@@ -236,6 +239,17 @@ end
 ------------------------------------------ Where you can update your stuff each frame
 function GUIProtoBuyMenu:Update(deltaTime)
     GUIAnimatedScript.Update(self, deltaTime)
+    
+    for buttonNum, button in ipairs(self.buttonList) do
+        
+        if GetIsMouseOver(self, button) then
+            button:SetColor( Color(0, 1, 0, 1) )
+        else
+            button:SetColor( Color(1, 0, 0, 1) )
+        end
+    
+    end
+
     
     // todo
 end
