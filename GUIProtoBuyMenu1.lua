@@ -135,8 +135,7 @@ function GUIProtoBuyMenu:Initialize()
                   hover = "ui/egg.dds",
                   selected = "ui/egg.dds",
                 },
-             
-             }, 
+              }, 
               { name = "Railgun",
                 powerCost = 50,
                 texturePathMap = {
@@ -146,7 +145,7 @@ function GUIProtoBuyMenu:Initialize()
                   selected = "ui/egg.dds",
                 },
               },
-             { name = "Flamethrower",
+              { name = "Flamethrower",
                 powerCost = 50,
                 texturePathMap = {
                   disabled = "ui/egg.dds",
@@ -160,7 +159,7 @@ function GUIProtoBuyMenu:Initialize()
         
 
 
-       rightArm = {
+        rightArm = {
             title = "RIGHT ARM",
             dimensionData = { x =500, y = 10, width = 70, height = 50 },
             moduleButtonDataList = {
@@ -191,24 +190,25 @@ function GUIProtoBuyMenu:Initialize()
                   selected = "ui/egg.dds",
                 },
               },
-             { name = "Flamethrower",
+              { name = "Flamethrower",
                 powerCost = 50,
                 texturePathMap = {
                   disabled = "ui/egg.dds",
                   normal = "ui/FlamethrowerDisplay.dds",
                   hover = "ui/egg.dds",
                   selected = "ui/egg.dds",
-                    },
                 },
+               },
             },
-        },
+          },
           
-     }
+    }
 
     local eggsPerRow = 5
      
     for panelName, panelData in pairs(self.modulePanelMap) do
-            
+        print(panelData.title)
+    
             local panelBox = GUIManager:CreateGraphicItem()
         panelBox:SetTexture( "ui/menu/repeating_bg.dds" )
         panelBox:SetColor(Color( 1, 0, 0, 1   ))
