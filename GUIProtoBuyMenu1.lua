@@ -22,7 +22,7 @@ Script.Load("lua/GUIAnimatedScript.lua")
 class 'GUIProtoBuyMenu' (GUIAnimatedScript)
 ------------------------------------------ Various handy variables
  
-GUIProtoBuyMenu.kBackgroundWidth = GUIScale(800)
+GUIProtoBuyMenu.kBackgroundWidth = GUIScale(1000)
 GUIProtoBuyMenu.kBackgroundHeight = GUIScale(800)
  GUIProtoBuyMenu.kBackgroundXOffset = GUIScale(0)
 ------------------------------------------
@@ -109,17 +109,24 @@ function GUIProtoBuyMenu:Initialize()
     
     self.content:AddChild(self.meowText)*/
     
-    
+            local exoImage = GUIManager:CreateGraphicItem()
+        exoImage:SetTexture( "ui/exo.jpg" )
+        exoImage:SetColor(Color(       0, 0, 0, 1   ))
+        exoImage:SetPosition(Vector(200, 150, 0))
+        exoImage:SetSize(Vector( 400, 400, 0 ))
+        exoImage:SetTexturePixelCoordinates( 0, 0, 399, 437 )
+        
+        self.content:AddChild(exoImage)
 
     self.modulePanelMap = {   
     
      
-        leftArm = {
+       leftArm = {
             title = "LEFT ARM",
-            dimensionData = { x = 10, y = 10, width = 40, height = 90 },
+            dimensionData = { x = 50, y = 150, width = 100, height = 50 },
             moduleButtonDataList = {
               { name = "Welder",
-                powerCost = 50,
+                powerCost = 10,
                 texturePathMap = {
                   disabled = "ui/egg.dds",
                   normal = "ui/marine_welder.dds",
@@ -128,7 +135,7 @@ function GUIProtoBuyMenu:Initialize()
                 },
               },
               { name = "Minigun",
-                powerCost = 50,
+                powerCost = 10,
                 texturePathMap = {
                   disabled = "ui/egg.dds",
                   normal = "models/marine/exosuit/minigun.dds",
@@ -137,7 +144,7 @@ function GUIProtoBuyMenu:Initialize()
                 },
               }, 
               { name = "Railgun",
-                powerCost = 50,
+                powerCost = 15,
                 texturePathMap = {
                   disabled = "ui/egg.dds",
                   normal = "models/marine/exosuit/railgun.dds",
@@ -146,7 +153,7 @@ function GUIProtoBuyMenu:Initialize()
                 },
               },
               { name = "Flamethrower",
-                powerCost = 50,
+                powerCost = 20,
                 texturePathMap = {
                   disabled = "ui/egg.dds",
                   normal = "ui/FlamethrowerDisplay.dds",
@@ -161,10 +168,10 @@ function GUIProtoBuyMenu:Initialize()
 
         rightArm = {
             title = "RIGHT ARM",
-            dimensionData = { x =500, y = 10, width = 70, height = 50 },
+            dimensionData = { x =700, y = 150, width = 100, height = 50 },
             moduleButtonDataList = {
               { name = "Welder",
-                powerCost = 50,
+                powerCost = 10,
                 texturePathMap = {
                   disabled = "ui/egg.dds",
                   normal = "ui/marine_welder.dds",
@@ -173,7 +180,7 @@ function GUIProtoBuyMenu:Initialize()
                 },
               },
               { name = "Minigun",
-                powerCost = 50,
+                powerCost = 10,
                 texturePathMap = {
                   disabled = "ui/egg.dds",
                   normal = "models/marine/exosuit/minigun.dds",
@@ -182,7 +189,7 @@ function GUIProtoBuyMenu:Initialize()
                 },
               },
               { name = "Railgun",
-                powerCost = 50,
+                powerCost = 15,
                 texturePathMap = {
                   disabled = "ui/egg.dds",
                   normal = "models/marine/exosuit/railgun.dds",
@@ -191,7 +198,7 @@ function GUIProtoBuyMenu:Initialize()
                 },
               },
               { name = "Flamethrower",
-                powerCost = 50,
+                powerCost = 20,
                 texturePathMap = {
                   disabled = "ui/egg.dds",
                   normal = "ui/FlamethrowerDisplay.dds",
@@ -200,20 +207,71 @@ function GUIProtoBuyMenu:Initialize()
                 },
                },
             },
-          },
-          
+          }, 
+         
+       powerOutput = {
+            title = "POWER OUTPUT",
+            dimensionData = { x = 100, y = 50, width = 120, height = 50},
+            moduleButtonDataList = {
+                  { name = "15",
+                    powerCost = 15,
+                    texturePathMap = {
+                       disabled = "ui/egg.dds",
+                       normal = "ui/marine_welder.dds",
+                       hover = "ui/egg.dds",
+                       selected = "ui/egg.dds",
+                    },
+                },
+                  { name = "20",
+                    powerCost = 20,
+                    texturePathMap = {
+                      disabled = "ui/egg.dds",
+                      normal = "ui/marine_welder.dds",
+                      hover = "ui/egg.dds",
+                      selected = "ui/egg.dds",
+                    },
+                },
+                  { name = "25",
+                    powerCost = 25,
+                    texturePathMap = {
+                      disabled = "ui/egg.dds",
+                      normal = "ui/marine_welder.dds",
+                      hover = "ui/egg.dds",
+                      selected = "ui/egg.dds",
+                    },
+                },
+                  { name = "30",
+                    powerCost = 30,
+                    texturePathMap = {
+                      disabled = "ui/egg.dds",
+                      normal = "ui/marine_welder.dds",
+                      hover = "ui/egg.dds",
+                      selected = "ui/egg.dds",
+                    },
+                },
+                  { name = "40",
+                    powerCost = 40,
+                    texturePathMap = {
+                      disabled = "ui/egg.dds",
+                      normal = "ui/marine_welder.dds",
+                      hover = "ui/egg.dds",
+                      selected = "ui/egg.dds",
+                    },
+                },
+              },
+            },
+    
     }
-
-    local eggsPerRow = 5
+    
+    local eggsPerRow = 8
      
     for panelName, panelData in pairs(self.modulePanelMap) do
-        print(panelData.title)
     
             local panelBox = GUIManager:CreateGraphicItem()
         panelBox:SetTexture( "ui/menu/repeating_bg.dds" )
-        panelBox:SetColor(Color( 1, 0, 0, 1   ))
+        panelBox:SetColor(Color( 1, 1, 1, 1   ))
         panelBox:SetPosition(Vector(panelData.dimensionData.x , panelData.dimensionData.y, 0 ))
-        panelBox:SetSize(Vector( panelData.dimensionData.width, panelData.dimensionData.height, 0 ))
+       panelBox:SetSize(Vector( panelData.dimensionData.width, panelData.dimensionData.height, 0 ))
         //boxButton:AddChild(eggImage)
        
         self.content:AddChild(panelBox)
@@ -239,11 +297,29 @@ function GUIProtoBuyMenu:Initialize()
  
       for moduleButtonNum, moduleButtonData in ipairs(panelData.moduleButtonDataList) do
         
+        if panelData.title == "RIGHT ARM" then
+                  PosX = 700
+                  PosY = 250
+                  offsetX = 0
+                  offsetY = ((moduleButtonNum-1)%eggsPerRow)*50 
+        elseif panelData.title == "POWER OUTPUT" then
+                  PosX =  250
+                  PosY = 75
+                  offsetX = ((moduleButtonNum-1)%eggsPerRow)*75 
+                  offsetY = 0
+        elseif panelData.title == "LEFT ARM" then
+                  PosX = 50
+                  PosY = 250
+                  offsetX = 0
+                  offsetY = ((moduleButtonNum-1)%eggsPerRow)*50 
+        end
+            
+         
         local boxButton = GUIManager:CreateGraphicItem()
         boxButton:SetTexture( "ui/menu/repeating_bg.dds" )
-        boxButton:SetColor(Color(       1, 0, 0, 1   ))
-        boxButton:SetPosition(Vector(10+ math.floor((moduleButtonNum-1)/eggsPerRow)*500, 50+((moduleButtonNum-1)%eggsPerRow)*75, 0 ))
-        boxButton:SetSize(Vector( 50, 50, 0 ))
+        boxButton:SetColor(Color(       1, 0, 1, 1   ))
+        boxButton:SetPosition(Vector(PosX + offsetX, PosY + offsetY, 0 ))
+        boxButton:SetSize(Vector( 50, 25, 0 ))
         self.content:AddChild(boxButton)
 
         
@@ -255,7 +331,7 @@ function GUIProtoBuyMenu:Initialize()
         local moduleText = GUIManager:CreateTextItem()
         moduleText:SetFontName( "fonts/AgencyFB_small.fnt" )
         moduleText:SetFontIsBold(true)
-        moduleText:SetPosition(Vector(10, 40, 0))
+        moduleText:SetPosition(Vector(0, 0, 0))
         moduleText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
         moduleText:SetTextAlignmentX(GUIItem.Align_Min)
         moduleText:SetTextAlignmentY(GUIItem.Align_Max)
@@ -263,15 +339,26 @@ function GUIProtoBuyMenu:Initialize()
         moduleText:SetText(moduleButtonData.name)
         boxButton:AddChild(moduleText)
 
+       /*   local powoutText = GUIManager:CreateTextItem()
+        powoutText:SetFontName( "fonts/AgencyFB_small.fnt" )
+        powoutText:SetFontIsBold(true)
+        powoutText:SetPosition(Vector(0, 0, 0))
+        powoutText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
+        powoutText:SetTextAlignmentX(GUIItem.Align_Min)
+        powoutText:SetTextAlignmentY(GUIItem.Align_Max)
+        powoutText:SetColor(Color(kMarineFontColor))
+        powoutText:SetText(moduleButtonData.powername)
+        boxButton:AddChild(powoutText)*/
+        
         table.insert(self.GUIItems, moduleText)
 
                 local powerText = GUIManager:CreateTextItem()
         powerText:SetFontName( "fonts/AgencyFB_small.fnt" )
         powerText:SetFontIsBold(true)
-        powerText:SetPosition(Vector(30, 70, 0))
-        powerText:SetAnchor(        GUIItem.Right, GUIItem.Top        )
-        powerText:SetTextAlignmentX(GUIItem.Align_Min)
-        powerText:SetTextAlignmentY(GUIItem.Align_Max)
+        powerText:SetPosition(Vector(25, 12.5, 0))
+        powerText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
+        powerText:SetTextAlignmentX(GUIItem.Align_Center)
+        powerText:SetTextAlignmentY(GUIItem.Align_Center)
         powerText:SetColor(Color(kMarineFontColor))
         powerText:SetText(tostring(moduleButtonData.powerCost))
         boxButton:AddChild(powerText)
@@ -279,22 +366,22 @@ function GUIProtoBuyMenu:Initialize()
         table.insert(self.GUIItems, powerText)
         
         
-        local buttonImage = GUIManager:CreateGraphicItem()
+      /*  local buttonImage = GUIManager:CreateGraphicItem()
         buttonImage:SetTexture( moduleButtonData.texturePathMap.normal )
         buttonImage:SetColor(Color(       1, 1, 1, 1   ))
         //buttonImage:SetPosition(Vector(10+ ((buttonNum-1)%eggsPerRow)*150, 10+math.floor((buttonNum-1)/eggsPerRow)*150, 0 ))
-        buttonImage:SetSize(Vector( 50, 50, 0 ))
-        buttonImage:SetTexturePixelCoordinates( 0, 0, 384*2, 192 )
+        buttonImage:SetSize(Vector( 50, 25, 0 ))
+        buttonImage:SetTexturePixelCoordinates( 0, 0, 50, 50 )
         
         boxButton:AddChild(buttonImage)
 
         
-        table.insert(self.GUIItems, buttonImage)
+        table.insert(self.GUIItems, buttonImage)*/
         
       end
     end    
     
-    
+
   
     // START HERE
     
