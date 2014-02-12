@@ -21,20 +21,59 @@ end
 Script.Load("lua/GUIAnimatedScript.lua")
 class 'GUIProtoBuyMenu' (GUIAnimatedScript)
 ------------------------------------------ Various handy variables
- 
+ GUIProtoBuyMenu.kContentBgBackTexture = "ui/menu/repeating_bg_black.dds"
+GUIProtoBuyMenu.kBuyMenuTexture = "ui/marine_buy_textures.dds"
+GUIProtoBuyMenu.kBuyHUDTexture = "ui/marine_buy_icons.dds"
+GUIProtoBuyMenu.kRepeatingBackground = "ui/menu/grid.dds"
+GUIProtoBuyMenu.kContentBgTexture = "ui/menu/repeating_bg.dds"
+GUIProtoBuyMenu.kContentBgBackTexture = "ui/menu/repeating_bg_black.dds"
+GUIProtoBuyMenu.kResourceIconTexture = "ui/pres_icon_big.dds"
+GUIProtoBuyMenu.kBigIconTexture = "ui/marine_buy_bigicons.dds"
+GUIProtoBuyMenu.kButtonTexture = "ui/marine_buymenu_button.dds"
+GUIProtoBuyMenu.kMenuSelectionTexture = "ui/marine_buymenu_selector.dds"
+GUIProtoBuyMenu.kScanLineTexture = "ui/menu/scanLine_big.dds"
+GUIProtoBuyMenu.kArrowTexture = "ui/menu/arrow_horiz.dds"
+
+
 GUIProtoBuyMenu.kBackgroundWidth = GUIScale(1000)
 GUIProtoBuyMenu.kBackgroundHeight = GUIScale(800)
- GUIProtoBuyMenu.kBackgroundXOffset = GUIScale(0)
+ GUIProtoBuyMenu.kBackgroundXOffset = GUIScale(20)
+ 
+GUIProtoBuyMenu.kResourceDisplayHeight = GUIScale(64)
+GUIProtoBuyMenu.kResourceIconHeight = GUIScale(32)
+GUIProtoBuyMenu.kResourceIconWidth = GUIScale(32)
+
+local kEquippedColor = Color(0.5, 0.5, 0.5, 0.5)
+
+GUIProtoBuyMenu.kTextColor = Color(kMarineFontColor)
+GUIProtoBuyMenu.kFont = "fonts/AgencyFB_small.fnt"
+GUIProtoBuyMenu.kFont2 = "fonts/AgencyFB_small.fnt"
+
+GUIProtoBuyMenu.kButtonWidth = GUIScale(160)
+GUIProtoBuyMenu.kButtonHeight = GUIScale(64)
+GUIProtoBuyMenu.kCloseButtonColor = Color(1, 1, 0, 1)
+
+GUIProtoBuyMenu.kMenuWidth = GUIScale(190)
+GUIProtoBuyMenu.kPadding = GUIScale(8)
+
 ------------------------------------------
 local GetIsMouseOver -- ignore this
  
+
+
  
 ------------------------------------------ Where to create your stuff
+
+
+
+
 function GUIProtoBuyMenu:Initialize()
+   
     GUIAnimatedScript.Initialize(self)
     MarineBuy_OnOpen()
     self.GUIItems = {}
     self.buttonList = {}
+  
 
     self.mouseOverStates = { }
 
@@ -71,56 +110,190 @@ function GUIProtoBuyMenu:Initialize()
     end
     self.background:AddChild(self.content)
     
-  /*  do self.testText = GUIManager:CreateTextItem()
-        self.testText:SetFontName( "fonts/AgencyFB_small.fnt" )
-        self.testText:SetFontIsBold(true)
-        self.testText:SetPosition(Vector(
-            20, 20, 0
-        ))
-        self.testText:SetAnchor(
-            GUIItem.Left, GUIItem.Top
-        )
-        self.testText:SetTextAlignmentX(GUIItem.Align_Min)
-        self.testText:SetTextAlignmentY(GUIItem.Align_Max)
-        self.testText:SetColor(Color(
-            0, 1, 0, 1
-        ))
-        self.testText:SetText("Hello!")
-    end
-    self.content:AddChild(self.testText)*/
-    
-    
-    /*do self.meowText = GUIManager:CreateTextItem()
-        self.meowText:SetFontName( "fonts/AgencyFB_small.fnt" )
-        self.meowText:SetFontIsBold(true)
-        self.meowText:SetPosition(Vector(
-            300, 500, 0         ))
-        self.meowText:SetAnchor(
-            GUIItem.Left, GUIItem.Top
-        )
-        self.meowText:SetTextAlignmentX(GUIItem.Align_Center)
-        self.meowText:SetTextAlignmentY(GUIItem.Align_Center)
+  
+    local exoImage = GUIManager:CreateGraphicItem()
+    exoImage:SetTexture( "ui/exo1.dds" )
+    exoImage:SetColor(Color(       0, 0, 0, 1   ))
+    exoImage:SetPosition(Vector(200, 150, 0))
+    exoImage:SetSize(Vector( 400, 400, 0 ))
+    exoImage:SetTexturePixelCoordinates( 0, 0, 399, 437 )
         
-        self.meowText:SetColor(Color(
-            0, 1, 0, 1
-        ))
-        self.meowText:SetText("Meow!")
-    end
+    self.content:AddChild(exoImage)
+      
+    local resourceDisplayBackground = GUIManager:CreateGraphicItem()
+    resourceDisplayBackground:SetSize(Vector(GUIProtoBuyMenu.kBackgroundWidth, GUIProtoBuyMenu.kResourceDisplayHeight, 0))
+    resourceDisplayBackground:SetPosition(Vector(0, -GUIProtoBuyMenu.kResourceDisplayHeight, 0))
+    resourceDisplayBackground:SetTexture(GUIProtoBuyMenu.kContentBgBackTexture)
+    resourceDisplayBackground:SetTexturePixelCoordinates(0, 0, GUIProtoBuyMenu.kBackgroundWidth, GUIProtoBuyMenu.kResourceDisplayHeight)
+    self.content:AddChild(resourceDisplayBackground)
     
-    self.content:AddChild(self.meowText)*/
-    
-            local exoImage = GUIManager:CreateGraphicItem()
-        exoImage:SetTexture( "ui/exo.jpg" )
-        exoImage:SetColor(Color(       0, 0, 0, 1   ))
-        exoImage:SetPosition(Vector(200, 150, 0))
-        exoImage:SetSize(Vector( 400, 400, 0 ))
-        exoImage:SetTexturePixelCoordinates( 0, 0, 399, 437 )
-        
-        self.content:AddChild(exoImage)
+    local resourceDisplayIcon = GUIManager:CreateGraphicItem()
+    resourceDisplayIcon:SetSize(Vector(GUIProtoBuyMenu.kResourceIconWidth, GUIProtoBuyMenu.kResourceIconHeight, 0))
+    resourceDisplayIcon:SetAnchor(GUIItem.Right, GUIItem.Center)
+    resourceDisplayIcon:SetPosition(Vector(-GUIProtoBuyMenu.kResourceIconWidth * 2.2, -GUIProtoBuyMenu.kResourceIconHeight / 2, 0))
+    resourceDisplayIcon:SetTexture(GUIProtoBuyMenu.kResourceIconTexture)
+    resourceDisplayIcon:SetColor(GUIProtoBuyMenu.kTextColor)
+    resourceDisplayBackground:AddChild(resourceDisplayIcon)
 
-    self.modulePanelMap = {   
+    resourceDisplay = GUIManager:CreateTextItem()
+    resourceDisplay:SetFontName(GUIProtoBuyMenu.kFont)
+    resourceDisplay:SetFontIsBold(true)
+    resourceDisplay:SetAnchor(GUIItem.Right, GUIItem.Center)
+    resourceDisplay:SetPosition(Vector(-GUIProtoBuyMenu.kResourceIconWidth , 0, 0))
+    resourceDisplay:SetTextAlignmentX(GUIItem.Align_Min)
+    resourceDisplay:SetTextAlignmentY(GUIItem.Align_Center)
+    resourceDisplay:SetColor(GUIProtoBuyMenu.kTextColor)
+    //self.resourceDisplay:SetColor(GUIProtoBuyMenu.kTextColor)
     
+    resourceDisplay:SetText("")
+    resourceDisplayBackground:AddChild(resourceDisplay)
+    
+    currentDescription = GUIManager:CreateTextItem()
+    currentDescription:SetFontName(GUIProtoBuyMenu.kFont)
+    currentDescription:SetFontIsBold(true)
+    currentDescription:SetAnchor(GUIItem.Right, GUIItem.Top)
+    currentDescription:SetPosition(Vector(-GUIProtoBuyMenu.kResourceIconWidth * 3 , GUIProtoBuyMenu.kResourceIconHeight, 0))
+    currentDescription:SetTextAlignmentX(GUIItem.Align_Max)
+    currentDescription:SetTextAlignmentY(GUIItem.Align_Center)
+    currentDescription:SetColor(GUIProtoBuyMenu.kTextColor)
+    currentDescription:SetText(Locale.ResolveString("CURRENT"))
+    
+    resourceDisplayBackground:AddChild(currentDescription)   
+
+    
+    local closeButton = GUIManager:CreateGraphicItem()
+    closeButton:SetAnchor(GUIItem.Right, GUIItem.Bottom)
+    closeButton:SetSize(Vector(GUIProtoBuyMenu.kButtonWidth, GUIProtoBuyMenu.kButtonHeight, 0))
+    closeButton:SetPosition(Vector(-GUIProtoBuyMenu.kButtonWidth, GUIProtoBuyMenu.kPadding, 0))
+    closeButton:SetTexture(GUIProtoBuyMenu.kButtonTexture)
+    closeButton:SetLayer(kGUILayerPlayerHUDForeground4)
+    self.content:AddChild(closeButton)
+    
+    local closeButtonText = GUIManager:CreateTextItem()
+    closeButtonText:SetAnchor(GUIItem.Middle, GUIItem.Center)
+    closeButtonText:SetFontName(GUIProtoBuyMenu.kFont)
+    closeButtonText:SetTextAlignmentX(GUIItem.Align_Center)
+    closeButtonText:SetTextAlignmentY(GUIItem.Align_Center)
+    closeButtonText:SetText(Locale.ResolveString("EXIT"))
+    closeButtonText:SetFontIsBold(true)
+    closeButtonText:SetColor(GUIProtoBuyMenu.kCloseButtonColor)
+    closeButton:AddChild(closeButtonText)
+        
+        local confirmButton = GUIManager:CreateGraphicItem()
+    confirmButton:SetAnchor(GUIItem.Right, GUIItem.Bottom)
+    confirmButton:SetSize(Vector(GUIProtoBuyMenu.kButtonWidth, GUIProtoBuyMenu.kButtonHeight, 0))
+    confirmButton:SetPosition(Vector(-GUIProtoBuyMenu.kButtonWidth*4, GUIProtoBuyMenu.kPadding*(-12), 0))
+    confirmButton:SetTexture(GUIProtoBuyMenu.kButtonTexture)
+    confirmButton:SetLayer(kGUILayerPlayerHUDForeground4)
+    self.content:AddChild(confirmButton)
+    
+    local confirmButtonText = GUIManager:CreateTextItem()
+    confirmButtonText:SetAnchor(GUIItem.Middle, GUIItem.Center)
+    confirmButtonText:SetFontName(GUIProtoBuyMenu.kFont)
+    confirmButtonText:SetTextAlignmentX(GUIItem.Align_Center)
+    confirmButtonText:SetTextAlignmentY(GUIItem.Align_Center)
+    confirmButtonText:SetText(Locale.ResolveString("Confirm"))
+    confirmButtonText:SetFontIsBold(true)
+    confirmButtonText:SetColor(GUIProtoBuyMenu.kCloseButtonColor)
+    confirmButton:AddChild(confirmButtonText)
+    
+       local menu = GetGUIManager():CreateGraphicItem()
+    menu:SetPosition(Vector( -GUIProtoBuyMenu.kMenuWidth - GUIProtoBuyMenu.kPadding, 0, 0))
+    menu:SetTexture(GUIProtoBuyMenu.kContentBgTexture)
+    menu:SetSize(Vector(GUIProtoBuyMenu.kMenuWidth, GUIProtoBuyMenu.kBackgroundHeight, 0))
+    menu:SetTexturePixelCoordinates(0, 0, GUIProtoBuyMenu.kMenuWidth, GUIProtoBuyMenu.kBackgroundHeight)
+    self.content:AddChild(menu)
+    
+    local menuHeader = GetGUIManager():CreateGraphicItem()
+    menuHeader:SetSize(Vector(GUIProtoBuyMenu.kMenuWidth, GUIProtoBuyMenu.kResourceDisplayHeight, 0))
+    menuHeader:SetPosition(Vector(0, -GUIProtoBuyMenu.kResourceDisplayHeight, 0))
+    menuHeader:SetTexture(GUIProtoBuyMenu.kContentBgBackTexture)
+    menuHeader:SetTexturePixelCoordinates(0, 0, GUIProtoBuyMenu.kMenuWidth, GUIProtoBuyMenu.kResourceDisplayHeight)
+    menu:AddChild(menuHeader) 
+    
+    local menuHeaderTitle = GetGUIManager():CreateTextItem()
+    menuHeaderTitle:SetFontName(GUIProtoBuyMenu.kFont)
+    menuHeaderTitle:SetFontIsBold(true)
+    menuHeaderTitle:SetAnchor(GUIItem.Middle, GUIItem.Center)
+    menuHeaderTitle:SetTextAlignmentX(GUIItem.Align_Center)
+    menuHeaderTitle:SetTextAlignmentY(GUIItem.Align_Center)
+    menuHeaderTitle:SetColor(GUIProtoBuyMenu.kTextColor)
+    menuHeaderTitle:SetText(Locale.ResolveString("BUY"))
+    menuHeader:AddChild(menuHeaderTitle)
+    
+    local kSmallIconScale = 0.9
+    GUIProtoBuyMenu.kSmallIconSize = GUIScale( Vector(100, 50, 0) )
+    GUIProtoBuyMenu.kMenuIconSize = GUIScale( Vector(190, 80, 0) ) * kSmallIconScale
+    GUIProtoBuyMenu.kSelectorSize = GUIScale( Vector(215, 110, 0) ) * kSmallIconScale
+    GUIProtoBuyMenu.kIconTopOffset = 10
+    GUIProtoBuyMenu.kArrowWidth = GUIScale(32)
+    GUIProtoBuyMenu.kArrowHeight = GUIScale(32)
+    GUIProtoBuyMenu.kArrowTexCoords = { 1, 1, 0, 0 }
+        
+    
+    local selectorPosX = -GUIProtoBuyMenu.kSelectorSize.x + GUIProtoBuyMenu.kPadding
+    local fontScaleVector = Vector(0.8, 0.8, 0)
+    
+   
+ 
      
+    local graphicItem = GUIManager:CreateGraphicItem()
+    graphicItem:SetSize(GUIProtoBuyMenu.kMenuIconSize)
+    graphicItem:SetAnchor(GUIItem.Middle, GUIItem.Top)
+    graphicItem:SetPosition(Vector(-GUIProtoBuyMenu.kMenuIconSize.x/ 2, GUIProtoBuyMenu.kIconTopOffset + (GUIProtoBuyMenu.kMenuIconSize.y)  - GUIProtoBuyMenu.kMenuIconSize.y, 0))
+    graphicItem:SetTexture("ui/inventory_icons.dds")
+    graphicItem:SetTexturePixelCoordinates(0,0,56, 1566)
+    
+    local graphicItemActive = GUIManager:CreateGraphicItem()
+    graphicItemActive:SetSize(GUIProtoBuyMenu.kSelectorSize)
+    
+    graphicItemActive:SetPosition(Vector(selectorPosX, -GUIProtoBuyMenu.kSelectorSize.y / 2, 0))
+    graphicItemActive:SetAnchor(GUIItem.Right, GUIItem.Center)
+    graphicItemActive:SetTexture(GUIProtoBuyMenu.kMenuSelectionTexture)
+    graphicItemActive:SetIsVisible(false)
+    
+    graphicItem:AddChild(graphicItemActive)
+    
+    local costIcon = GUIManager:CreateGraphicItem()
+    costIcon:SetSize(Vector(GUIProtoBuyMenu.kResourceIconWidth * 0.8, GUIProtoBuyMenu.kResourceIconHeight * 0.8, 0))
+    costIcon:SetAnchor(GUIItem.Right, GUIItem.Bottom)
+    costIcon:SetPosition(Vector(-32, -GUIProtoBuyMenu.kResourceIconHeight * 0.5, 0))
+    costIcon:SetTexture(GUIProtoBuyMenu.kResourceIconTexture)
+    costIcon:SetColor(GUIProtoBuyMenu.kTextColor)
+    
+    local selectedArrow = GUIManager:CreateGraphicItem()
+    selectedArrow:SetSize(Vector(GUIProtoBuyMenu.kArrowWidth, GUIProtoBuyMenu.kArrowHeight, 0))
+    selectedArrow:SetAnchor(GUIItem.Left, GUIItem.Center)
+    selectedArrow:SetPosition(Vector(-GUIProtoBuyMenu.kArrowWidth - GUIProtoBuyMenu.kPadding, -GUIProtoBuyMenu.kArrowHeight * 0.5, 0))
+    selectedArrow:SetTexture(GUIProtoBuyMenu.kArrowTexture)
+    selectedArrow:SetColor(GUIProtoBuyMenu.kTextColor)
+    selectedArrow:SetTextureCoordinates(unpack(GUIProtoBuyMenu.kArrowTexCoords))
+    selectedArrow:SetIsVisible(false)
+    
+    graphicItem:AddChild(selectedArrow) 
+    
+    local itemCost = GUIManager:CreateTextItem()
+    itemCost:SetFontName(GUIProtoBuyMenu.kFont)
+    itemCost:SetFontIsBold(true)
+    itemCost:SetAnchor(GUIItem.Right, GUIItem.Center)
+    itemCost:SetPosition(Vector(0, 0, 0))
+    itemCost:SetTextAlignmentX(GUIItem.Align_Min)
+    itemCost:SetTextAlignmentY(GUIItem.Align_Center)
+    itemCost:SetScale(fontScaleVector)
+    itemCost:SetColor(GUIProtoBuyMenu.kTextColor)
+    itemCost:SetText(ToString(LookupTechData(itemTechId, kTechDataCostKey, 0)))
+    
+    costIcon:AddChild(itemCost)  
+    
+    graphicItem:AddChild(costIcon)  
+    
+    self.content:AddChild(graphicItem)
+
+
+
+    
+    self.modulePanelMap = {   
+      
        leftArm = {
             title = "LEFT ARM",
             dimensionData = { x = 50, y = 150, width = 100, height = 50 },
@@ -301,25 +474,25 @@ function GUIProtoBuyMenu:Initialize()
                   PosX = 700
                   PosY = 250
                   offsetX = 0
-                  offsetY = ((moduleButtonNum-1)%eggsPerRow)*50 
+                  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
         elseif panelData.title == "POWER OUTPUT" then
                   PosX =  250
                   PosY = 75
-                  offsetX = ((moduleButtonNum-1)%eggsPerRow)*75 
+                  offsetX = ((moduleButtonNum-1)%eggsPerRow)*100 
                   offsetY = 0
         elseif panelData.title == "LEFT ARM" then
                   PosX = 50
                   PosY = 250
                   offsetX = 0
-                  offsetY = ((moduleButtonNum-1)%eggsPerRow)*50 
+                  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
         end
             
          
         local boxButton = GUIManager:CreateGraphicItem()
         boxButton:SetTexture( "ui/menu/repeating_bg.dds" )
-        boxButton:SetColor(Color(       1, 0, 1, 1   ))
+        boxButton:SetColor(kEquippedColor)
         boxButton:SetPosition(Vector(PosX + offsetX, PosY + offsetY, 0 ))
-        boxButton:SetSize(Vector( 50, 25, 0 ))
+        boxButton:SetSize(Vector( 50, 50, 0 ))
         self.content:AddChild(boxButton)
 
         
@@ -366,28 +539,19 @@ function GUIProtoBuyMenu:Initialize()
         table.insert(self.GUIItems, powerText)
         
         
-      /*  local buttonImage = GUIManager:CreateGraphicItem()
-        buttonImage:SetTexture( moduleButtonData.texturePathMap.normal )
-        buttonImage:SetColor(Color(       1, 1, 1, 1   ))
-        //buttonImage:SetPosition(Vector(10+ ((buttonNum-1)%eggsPerRow)*150, 10+math.floor((buttonNum-1)/eggsPerRow)*150, 0 ))
-        buttonImage:SetSize(Vector( 50, 25, 0 ))
-        buttonImage:SetTexturePixelCoordinates( 0, 0, 50, 50 )
-        
-        boxButton:AddChild(buttonImage)
 
-        
-        table.insert(self.GUIItems, buttonImage)*/
         
       end
     end    
-    
-
-  
-    // START HERE
+            
+ 
+          
+            // START HERE
     
     
 end
  
+
  
 ------------------------------------------ Where to delete your stuff
 function GUIProtoBuyMenu:Uninitialize()
@@ -411,7 +575,7 @@ end
 ------------------------------------------ Where you can update your stuff each frame
 function GUIProtoBuyMenu:Update(deltaTime)
     GUIAnimatedScript.Update(self, deltaTime)
-    
+      
     for buttonNum, button in ipairs(self.buttonList) do
         
         if GetIsMouseOver(self, button) then
