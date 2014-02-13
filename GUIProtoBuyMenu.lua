@@ -466,11 +466,6 @@ function GUIProtoBuyMenu:_InitializeItemButtons()
     
     end
     
-    
-    
-    
-    
-    
     // to prevent wrong display before the first update
     self:_UpdateItemButtons(0)
 
@@ -559,26 +554,26 @@ function GUIProtoBuyMenu:_UninitializeItemButtons()
 end
 
 
-GUIProtoBuyMenu.modulePanelMap = {   
+GUIProtoBuyMenu.slotTypePanelData = {   
       
-       leftArm = {
-            title = "LEFT ARM",
+       kExoModuleSlots.LeftArm  = {
+			title = "LEFT ARM",
             dimensionData = { x = 50, y = 150, width = 120, height = 50 },
           },
-        
 
-
-       rightArm = {
+       kExoModuleSlots.LeftArm
+ = {
             title = "RIGHT ARM",
             dimensionData = { x =700, y = 150, width = 120, height = 50 },
 
           }, 
          
-       powerOutput = {
+       kExoModuleSlots.PowerSupply = {
             title = "POWER OUTPUT",
             dimensionData = { x = 100, y = 50, width = 120, height = 50},
           },
-    
+		  
+		  
 }
 
 
@@ -590,53 +585,53 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
     
     local eggsPerRow = 8
      
-    for panelName, panelData in pairs(self.modulePanelMap) do
+    for panelName, panelData in pairs(GUIProtoBuyMenu.modulePanelMap) do
     
-            local panelBox = GUIManager:CreateGraphicItem()
-        panelBox:SetTexture( GUIProtoBuyMenu.kContentBgTexture )
-        panelBox:SetColor( GUIProtoBuyMenu.kTextColor)
-        panelBox:SetPosition(Vector(panelData.dimensionData.x , panelData.dimensionData.y, 0 ))
-       panelBox:SetSize(Vector( panelData.dimensionData.width, panelData.dimensionData.height, 0 ))
-        //boxButton:AddChild(eggImage)
-       
-        self.content:AddChild(panelBox)
+		local panelBox = GUIManager:CreateGraphicItem()
+			panelBox:SetTexture( GUIProtoBuyMenu.kContentBgTexture )
+			panelBox:SetColor( GUIProtoBuyMenu.kTextColor)
+			panelBox:SetPosition(Vector(panelData.dimensionData.x , panelData.dimensionData.y, 0 ))
+			panelBox:SetSize(Vector( panelData.dimensionData.width, panelData.dimensionData.height, 0 ))
+			//boxButton:AddChild(eggImage)
+		   
+			self.content:AddChild(panelBox)
 
         table.insert(self.GUIItems, panelBox)
-        table.insert(self.modulePanelMap, panelBox)  
+        table.insert(GUIProtoBuyMenu.modulePanelMap, panelBox)  
         
-         local panelText = GUIManager:CreateTextItem()
-        panelText:SetFontName( "fonts/AgencyFB_small.fnt" )
-        panelText:SetFontIsBold(true)
-        panelText:SetPosition(Vector(10, 40, 0))
-        panelText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
-        panelText:SetTextAlignmentX(GUIItem.Align_Min)
-        panelText:SetTextAlignmentY(GUIItem.Align_Max)
-        panelText:SetColor(Color(kMarineFontColor))
-        panelText:SetText(panelData.title)
-        panelBox:AddChild(panelText)
-        table.insert(self.GUIItems, panelText)
+		local panelText = GUIManager:CreateTextItem()
+			panelText:SetFontName( "fonts/AgencyFB_small.fnt" )
+			panelText:SetFontIsBold(true)
+			panelText:SetPosition(Vector(10, 40, 0))
+			panelText:SetAnchor( GUIItem.Left, GUIItem.Top )
+			panelText:SetTextAlignmentX(GUIItem.Align_Min)
+			panelText:SetTextAlignmentY(GUIItem.Align_Max)
+			panelText:SetColor(Color(kMarineFontColor))
+			panelText:SetText(panelData.title)
+			panelBox:AddChild(panelText)
+			table.insert(self.GUIItems, panelText)
         
-        
-      
-     
- 
+       
       for moduleButtonNum, moduleButtonData in ipairs(panelData.moduleButtonDataList) do
         
         if panelData.title == "RIGHT ARM" then
-                  PosX = 700
-                  PosY = 250
-                  offsetX = 0
-                  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
+		  PosX = 700
+		  PosY = 250
+		  offsetX = 0
+		  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
+		  
         elseif panelData.title == "POWER OUTPUT" then
-                  PosX =  250
-                  PosY = 75
-                  offsetX = ((moduleButtonNum-1)%eggsPerRow)*100 
-                  offsetY = 0
+		  PosX =  250
+		  PosY = 75
+		  offsetX = ((moduleButtonNum-1)%eggsPerRow)*100 
+		  offsetY = 0
+		  
         elseif panelData.title == "LEFT ARM" then
-                  PosX = 50
-                  PosY = 250
-                  offsetX = 0
-                  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
+		  PosX = 50
+		  PosY = 250
+		  offsetX = 0
+		  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
+		  
         end
             
          
