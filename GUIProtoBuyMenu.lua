@@ -556,19 +556,18 @@ end
 
 GUIProtoBuyMenu.slotTypePanelData = {   
       
-       kExoModuleSlots.LeftArm  = {
+       [kExoModuleSlots.LeftArm]  = {
 			title = "LEFT ARM",
             dimensionData = { x = 50, y = 150, width = 120, height = 50 },
           },
 
-       kExoModuleSlots.LeftArm
- = {
+       [kExoModuleSlots.RightArm] = {
             title = "RIGHT ARM",
             dimensionData = { x =700, y = 150, width = 120, height = 50 },
 
           }, 
          
-       kExoModuleSlots.PowerSupply = {
+       [kExoModuleSlots.PowerSupply] = {
             title = "POWER OUTPUT",
             dimensionData = { x = 100, y = 50, width = 120, height = 50},
           },
@@ -585,34 +584,36 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
     
     local eggsPerRow = 8
      
-    for panelName, panelData in pairs(GUIProtoBuyMenu.modulePanelMap) do
+	 
+	 
+    for panelSlotType, panelData in pairs(GUIProtoBuyMenu.slotTypePanelData) do
     
 		local panelBox = GUIManager:CreateGraphicItem()
-			panelBox:SetTexture( GUIProtoBuyMenu.kContentBgTexture )
-			panelBox:SetColor( GUIProtoBuyMenu.kTextColor)
-			panelBox:SetPosition(Vector(panelData.dimensionData.x , panelData.dimensionData.y, 0 ))
-			panelBox:SetSize(Vector( panelData.dimensionData.width, panelData.dimensionData.height, 0 ))
-			//boxButton:AddChild(eggImage)
-		   
-			self.content:AddChild(panelBox)
+		panelBox:SetTexture( GUIProtoBuyMenu.kContentBgTexture )
+		panelBox:SetColor( GUIProtoBuyMenu.kTextColor)
+		panelBox:SetPosition(Vector(panelData.dimensionData.x , panelData.dimensionData.y, 0 ))
+		panelBox:SetSize(Vector( panelData.dimensionData.width, panelData.dimensionData.height, 0 ))
+		//boxButton:AddChild(eggImage)
+	   
+		self.content:AddChild(panelBox)
 
         table.insert(self.GUIItems, panelBox)
-        table.insert(GUIProtoBuyMenu.modulePanelMap, panelBox)  
+        table.insert(GUIProtoBuyMenu.slotTypePanelData, panelBox)  
         
 		local panelText = GUIManager:CreateTextItem()
-			panelText:SetFontName( "fonts/AgencyFB_small.fnt" )
-			panelText:SetFontIsBold(true)
-			panelText:SetPosition(Vector(10, 40, 0))
-			panelText:SetAnchor( GUIItem.Left, GUIItem.Top )
-			panelText:SetTextAlignmentX(GUIItem.Align_Min)
-			panelText:SetTextAlignmentY(GUIItem.Align_Max)
-			panelText:SetColor(Color(kMarineFontColor))
-			panelText:SetText(panelData.title)
-			panelBox:AddChild(panelText)
-			table.insert(self.GUIItems, panelText)
+		panelText:SetFontName( "fonts/AgencyFB_small.fnt" )
+		panelText:SetFontIsBold(true)
+		panelText:SetPosition(Vector(10, 40, 0))
+		panelText:SetAnchor( GUIItem.Left, GUIItem.Top )
+		panelText:SetTextAlignmentX(GUIItem.Align_Min)
+		panelText:SetTextAlignmentY(GUIItem.Align_Max)
+		panelText:SetColor(Color(kMarineFontColor))
+		panelText:SetText(panelData.title)
+		panelBox:AddChild(panelText)
+		table.insert(self.GUIItems, panelText)
         
        
-      for moduleButtonNum, moduleButtonData in ipairs(panelData.moduleButtonDataList) do
+	for moduleType, moduleTypeData in pairs(kExoModuleTypesData) do
         
         if panelData.title == "RIGHT ARM" then
 		  PosX = 700
@@ -652,7 +653,7 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
         moduleText:SetFontName( "fonts/AgencyFB_small.fnt" )
         moduleText:SetFontIsBold(true)
         moduleText:SetPosition(Vector(0, 0, 0))
-        moduleText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
+        moduleText:SetAnchor( GUIItem.Left, GUIItem.Top )
         moduleText:SetTextAlignmentX(GUIItem.Align_Min)
         moduleText:SetTextAlignmentY(GUIItem.Align_Max)
         moduleText:SetColor(Color(kMarineFontColor))
@@ -663,7 +664,7 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
         powoutText:SetFontName( "fonts/AgencyFB_small.fnt" )
         powoutText:SetFontIsBold(true)
         powoutText:SetPosition(Vector(0, 0, 0))
-        powoutText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
+        powoutText:SetAnchor( GUIItem.Left, GUIItem.Top )
         powoutText:SetTextAlignmentX(GUIItem.Align_Min)
         powoutText:SetTextAlignmentY(GUIItem.Align_Max)
         powoutText:SetColor(Color(kMarineFontColor))
@@ -676,7 +677,7 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
         powerText:SetFontName( "fonts/AgencyFB_small.fnt" )
         powerText:SetFontIsBold(true)
         powerText:SetPosition(Vector(25, 12.5, 0))
-        powerText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
+        powerText:SetAnchor( GUIItem.Left, GUIItem.Top )
         powerText:SetTextAlignmentX(GUIItem.Align_Center)
         powerText:SetTextAlignmentY(GUIItem.Align_Center)
         powerText:SetColor(Color(kMarineFontColor))
