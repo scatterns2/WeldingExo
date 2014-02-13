@@ -615,83 +615,86 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
        
 	for moduleType, moduleTypeData in pairs(kExoModuleTypesData) do
         
-        if panelData.title == "RIGHT ARM" then
-		  PosX = 700
-		  PosY = 250
-		  offsetX = 0
-		  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
-		  
-        elseif panelData.title == "POWER OUTPUT" then
-		  PosX =  250
-		  PosY = 75
-		  offsetX = ((moduleButtonNum-1)%eggsPerRow)*100 
-		  offsetY = 0
-		  
-        elseif panelData.title == "LEFT ARM" then
-		  PosX = 50
-		  PosY = 250
-		  offsetX = 0
-		  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
-		  
-        end
-            
-         
-        local boxButton = GUIManager:CreateGraphicItem()
-        boxButton:SetTexture( "ui/menu/repeating_bg.dds" )
-        boxButton:SetColor(kEquippedColor)
-        boxButton:SetPosition(Vector(PosX + offsetX, PosY + offsetY, 0 ))
-        boxButton:SetSize(Vector( 50, 50, 0 ))
-        self.content:AddChild(boxButton)
+		if modelTypeData.category == kExoSlotTypeData[panelSlotType].category then
 
-        
-        table.insert(self.GUIItems, boxButton)
-        table.insert(self.buttonList, boxButton)
+			
+			if panelData.title == "RIGHT ARM" then
+			  PosX = 700
+			  PosY = 250
+			  offsetX = 0
+			  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
+			  
+			elseif panelData.title == "POWER OUTPUT" then
+			  PosX =  250
+			  PosY = 75
+			  offsetX = ((moduleButtonNum-1)%eggsPerRow)*100 
+			  offsetY = 0
+			  
+			elseif panelData.title == "LEFT ARM" then
+			  PosX = 50
+			  PosY = 250
+			  offsetX = 0
+			  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
+			  
+			end
+				
+			 
+			local boxButton = GUIManager:CreateGraphicItem()
+			boxButton:SetTexture( "ui/menu/repeating_bg.dds" )
+			boxButton:SetColor(kEquippedColor)
+			boxButton:SetPosition(Vector(PosX + offsetX, PosY + offsetY, 0 ))
+			boxButton:SetSize(Vector( 50, 50, 0 ))
+			self.content:AddChild(boxButton)
 
- 
-        
-        local moduleText = GUIManager:CreateTextItem()
-        moduleText:SetFontName( "fonts/AgencyFB_small.fnt" )
-        moduleText:SetFontIsBold(true)
-        moduleText:SetPosition(Vector(0, 0, 0))
-        moduleText:SetAnchor( GUIItem.Left, GUIItem.Top )
-        moduleText:SetTextAlignmentX(GUIItem.Align_Min)
-        moduleText:SetTextAlignmentY(GUIItem.Align_Max)
-        moduleText:SetColor(Color(kMarineFontColor))
-        moduleText:SetText(moduleButtonData.name)
-        boxButton:AddChild(moduleText)
+			
+			table.insert(self.GUIItems, boxButton)
+			table.insert(self.buttonList, boxButton)
 
-       /*   local powoutText = GUIManager:CreateTextItem()
-        powoutText:SetFontName( "fonts/AgencyFB_small.fnt" )
-        powoutText:SetFontIsBold(true)
-        powoutText:SetPosition(Vector(0, 0, 0))
-        powoutText:SetAnchor( GUIItem.Left, GUIItem.Top )
-        powoutText:SetTextAlignmentX(GUIItem.Align_Min)
-        powoutText:SetTextAlignmentY(GUIItem.Align_Max)
-        powoutText:SetColor(Color(kMarineFontColor))
-        powoutText:SetText(moduleButtonData.powername)
-        boxButton:AddChild(powoutText)*/
-        
-        table.insert(self.GUIItems, moduleText)
+	 
+			
+			local moduleText = GUIManager:CreateTextItem()
+			moduleText:SetFontName( "fonts/AgencyFB_small.fnt" )
+			moduleText:SetFontIsBold(true)
+			moduleText:SetPosition(Vector(0, 0, 0))
+			moduleText:SetAnchor( GUIItem.Left, GUIItem.Top )
+			moduleText:SetTextAlignmentX(GUIItem.Align_Min)
+			moduleText:SetTextAlignmentY(GUIItem.Align_Max)
+			moduleText:SetColor(Color(kMarineFontColor))
+			moduleText:SetText(moduleButtonData.name)
+			boxButton:AddChild(moduleText)
 
-                local powerText = GUIManager:CreateTextItem()
-        powerText:SetFontName( "fonts/AgencyFB_small.fnt" )
-        powerText:SetFontIsBold(true)
-        powerText:SetPosition(Vector(25, 12.5, 0))
-        powerText:SetAnchor( GUIItem.Left, GUIItem.Top )
-        powerText:SetTextAlignmentX(GUIItem.Align_Center)
-        powerText:SetTextAlignmentY(GUIItem.Align_Center)
-        powerText:SetColor(Color(kMarineFontColor))
-        powerText:SetText(tostring(moduleButtonData.powerCost))
-        boxButton:AddChild(powerText)
+		   /*   local powoutText = GUIManager:CreateTextItem()
+			powoutText:SetFontName( "fonts/AgencyFB_small.fnt" )
+			powoutText:SetFontIsBold(true)
+			powoutText:SetPosition(Vector(0, 0, 0))
+			powoutText:SetAnchor( GUIItem.Left, GUIItem.Top )
+			powoutText:SetTextAlignmentX(GUIItem.Align_Min)
+			powoutText:SetTextAlignmentY(GUIItem.Align_Max)
+			powoutText:SetColor(Color(kMarineFontColor))
+			powoutText:SetText(moduleButtonData.powername)
+			boxButton:AddChild(powoutText)*/
+			
+			table.insert(self.GUIItems, moduleText)
 
-        table.insert(self.GUIItems, powerText)
-        
-        
+					local powerText = GUIManager:CreateTextItem()
+			powerText:SetFontName( "fonts/AgencyFB_small.fnt" )
+			powerText:SetFontIsBold(true)
+			powerText:SetPosition(Vector(25, 12.5, 0))
+			powerText:SetAnchor( GUIItem.Left, GUIItem.Top )
+			powerText:SetTextAlignmentX(GUIItem.Align_Center)
+			powerText:SetTextAlignmentY(GUIItem.Align_Center)
+			powerText:SetColor(Color(kMarineFontColor))
+			powerText:SetText(tostring(moduleButtonData.powerCost))
+			boxButton:AddChild(powerText)
+
+			table.insert(self.GUIItems, powerText)
+			
+			
 
         
       end
     end    
-
+  end
 end    
     
 function GUIProtoBuyMenu:_InitializeContent()
