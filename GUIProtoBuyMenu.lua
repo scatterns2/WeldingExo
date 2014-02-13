@@ -559,153 +559,34 @@ function GUIProtoBuyMenu:_UninitializeItemButtons()
 end
 
 
-function GUIProtoBuyMenu:_InitializeExoButtons()
-   
-    self.GUIItems = {}
-    self.buttonList = {}
-    self.modulePanelMap = {   
+GUIProtoBuyMenu.modulePanelMap = {   
       
        leftArm = {
             title = "LEFT ARM",
             dimensionData = { x = 50, y = 150, width = 120, height = 50 },
-            moduleButtonDataList = {
-              { name = "Welder",
-                powerCost = 10,
-                texturePathMap = {
-                  disabled = "ui/egg.dds",
-                  normal = "ui/marine_welder.dds",
-                  hover = "ui/egg.dds",
-                  selected = "ui/egg.dds",
-                },
-              },
-              { name = "Minigun",
-                powerCost = 10,
-                texturePathMap = {
-                  disabled = "ui/egg.dds",
-                  normal = "models/marine/exosuit/minigun.dds",
-                  hover = "ui/egg.dds",
-                  selected = "ui/egg.dds",
-                },
-              }, 
-              { name = "Railgun",
-                powerCost = 15,
-                texturePathMap = {
-                  disabled = "ui/egg.dds",
-                  normal = "models/marine/exosuit/railgun.dds",
-                  hover = "ui/egg.dds",
-                  selected = "ui/egg.dds",
-                },
-              },
-              { name = "Flamethrower",
-                powerCost = 20,
-                texturePathMap = {
-                  disabled = "ui/egg.dds",
-                  normal = "ui/FlamethrowerDisplay.dds",
-                  hover = "ui/egg.dds",
-                  selected = "ui/egg.dds",
-                },
-              },
-            },
           },
         
 
 
-        rightArm = {
+       rightArm = {
             title = "RIGHT ARM",
             dimensionData = { x =700, y = 150, width = 120, height = 50 },
-            moduleButtonDataList = {
-              { name = "Welder",
-                powerCost = 10,
-                texturePathMap = {
-                  disabled = "ui/egg.dds",
-                  normal = "ui/marine_welder.dds",
-                  hover = "ui/egg.dds",
-                  selected = "ui/egg.dds",
-                },
-              },
-              { name = "Minigun",
-                powerCost = 10,
-                texturePathMap = {
-                  disabled = "ui/egg.dds",
-                  normal = "models/marine/exosuit/minigun.dds",
-                  hover = "ui/egg.dds",
-                  selected = "ui/egg.dds",
-                },
-              },
-              { name = "Railgun",
-                powerCost = 15,
-                texturePathMap = {
-                  disabled = "ui/egg.dds",
-                  normal = "models/marine/exosuit/railgun.dds",
-                  hover = "ui/egg.dds",
-                  selected = "ui/egg.dds",
-                },
-              },
-              { name = "Flamethrower",
-                powerCost = 20,
-                texturePathMap = {
-                  disabled = "ui/egg.dds",
-                  normal = "ui/FlamethrowerDisplay.dds",
-                  hover = "ui/egg.dds",
-                  selected = "ui/egg.dds",
-                },
-               },
-            },
+
           }, 
          
        powerOutput = {
             title = "POWER OUTPUT",
             dimensionData = { x = 100, y = 50, width = 120, height = 50},
-            moduleButtonDataList = {
-                  { name = "15",
-                    powerCost = 15,
-                    texturePathMap = {
-                       disabled = "ui/egg.dds",
-                       normal = "ui/marine_welder.dds",
-                       hover = "ui/egg.dds",
-                       selected = "ui/egg.dds",
-                    },
-                },
-                  { name = "20",
-                    powerCost = 20,
-                    texturePathMap = {
-                      disabled = "ui/egg.dds",
-                      normal = "ui/marine_welder.dds",
-                      hover = "ui/egg.dds",
-                      selected = "ui/egg.dds",
-                    },
-                },
-                  { name = "25",
-                    powerCost = 25,
-                    texturePathMap = {
-                      disabled = "ui/egg.dds",
-                      normal = "ui/marine_welder.dds",
-                      hover = "ui/egg.dds",
-                      selected = "ui/egg.dds",
-                    },
-                },
-                  { name = "30",
-                    powerCost = 30,
-                    texturePathMap = {
-                      disabled = "ui/egg.dds",
-                      normal = "ui/marine_welder.dds",
-                      hover = "ui/egg.dds",
-                      selected = "ui/egg.dds",
-                    },
-                },
-                  { name = "40",
-                    powerCost = 40,
-                    texturePathMap = {
-                      disabled = "ui/egg.dds",
-                      normal = "ui/marine_welder.dds",
-                      hover = "ui/egg.dds",
-                      selected = "ui/egg.dds",
-                    },
-                },
-              },
-            },
+          },
     
-    }
+}
+
+
+function GUIProtoBuyMenu:_InitializeExoButtons()
+   
+    self.GUIItems = {}
+    self.buttonList = {}
+
     
     local eggsPerRow = 8
      
