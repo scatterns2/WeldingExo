@@ -8,16 +8,6 @@
 //
 // ========= For more information, visit us at http://www.unknownworlds.com =====================
 
-do
-    _CMD_CLIENTSCRIPT_VERSION = (_CMD_CLIENTSCRIPT_VERSION or 1)+1
-    local v = _CMD_CLIENTSCRIPT_VERSION
-    Event.Hook("Console_clientscript", function(path)
-        if v ~= _CMD_CLIENTSCRIPT_VERSION then return end
-        Script.Load(path)
-    end)
-end
-
-
 Script.Load("lua/GUIAnimatedScript.lua")
 
 class 'GUIProtoBuyMenu' (GUIAnimatedScript)
@@ -48,7 +38,7 @@ GUIProtoBuyMenu.kArrowHeight = GUIScale(32)
 GUIProtoBuyMenu.kArrowTexCoords = { 1, 1, 0, 0 }
 
 // Big Item Icons
-GUIProtoBuyMenu.kBigIconSize = GUIScale( Vector(320, 256, 0) )
+GUIProtoBuyMenu.kBigIconSize = GUIScale( Vector(400, 256, 0) )
 GUIProtoBuyMenu.kBigIconOffset = GUIScale(20)
 
 local kEquippedMouseoverColor = Color(1, 1, 1, 1)
@@ -109,7 +99,7 @@ end
 
 // Small Item Icons
 local kSmallIconScale = 0.9
-GUIProtoBuyMenu.kSmallIconSize = GUIScale( Vector(25, 25, 0) ) 
+GUIProtoBuyMenu.kSmallIconSize = GUIScale( Vector(100, 50, 0) )
 GUIProtoBuyMenu.kMenuIconSize = GUIScale( Vector(190, 80, 0) ) * kSmallIconScale
 GUIProtoBuyMenu.kSelectorSize = GUIScale( Vector(215, 110, 0) ) * kSmallIconScale
 GUIProtoBuyMenu.kIconTopOffset = 10
@@ -119,9 +109,6 @@ GUIProtoBuyMenu.kEquippedIconTopOffset = 58
 
 local smallIconHeight = 64
 local smallIconWidth = 128
-local smallIconRows = nil
-
-
 local gSmallIconIndex = nil
 local function GetSmallIconPixelCoordinates(itemTechId)
 
@@ -155,27 +142,21 @@ local function GetSmallIconPixelCoordinates(itemTechId)
         index = 0
     end
     
-    local columns = 12    
-    local textureOffset_x1 = index % columns
-    local textureOffset_y1 = math.floor(index / columns)
+    local y1 = index * smallIconHeight
+    local y2 = (index + 1) * smallIconHeight
     
-    local pixelXOffset = textureOffset_x1 * smallIconWidth 
-    local pixelYOffset = textureOffset_y1 * smallIconHeight 
-        
-    return pixelXOffset, pixelYOffset, pixelXOffset + smallIconWidth, pixelYOffset + smallIconHeight
-
+    return 0, y1, smallIconWidth, y2
 
 end
                             
 GUIProtoBuyMenu.kTextColor = Color(kMarineFontColor)
 
-// Controls background menu width
-GUIProtoBuyMenu.kMenuWidth = GUIScale(250)
+GUIProtoBuyMenu.kMenuWidth = GUIScale(190)
 GUIProtoBuyMenu.kPadding = GUIScale(8)
 
 GUIProtoBuyMenu.kEquippedWidth = GUIScale(128)
 
-GUIProtoBuyMenu.kBackgroundWidth = GUIScale(600)
+GUIProtoBuyMenu.kBackgroundWidth = GUIScale(1000)
 GUIProtoBuyMenu.kBackgroundHeight = GUIScale(710)
 // We want the background graphic to look centered around the circle even though there is the part coming off to the right.
 GUIProtoBuyMenu.kBackgroundXOffset = GUIScale(0)
@@ -198,7 +179,7 @@ GUIProtoBuyMenu.kEnabledColor = Color(1, 1, 1, 1)
 
 GUIProtoBuyMenu.kCloseButtonColor = Color(1, 1, 0, 1)
 
-GUIProtoBuyMenu.kButtonWidth = GUIScale(64)
+GUIProtoBuyMenu.kButtonWidth = GUIScale(160)
 GUIProtoBuyMenu.kButtonHeight = GUIScale(64)
 
 GUIProtoBuyMenu.kItemNameOffsetX = GUIScale(28)
@@ -207,19 +188,10 @@ GUIProtoBuyMenu.kItemNameOffsetY = GUIScale(256)
 GUIProtoBuyMenu.kItemDescriptionOffsetY = GUIScale(300)
 GUIProtoBuyMenu.kItemDescriptionSize = GUIScale( Vector(450, 180, 0) )
 
-GUIProtoBuyMenu.kSmallIconOffset_x = GUIScale(120)
-
-GUIProtoBuyMenu.kIconTopOffset = 40
-GUIProtoBuyMenu.kItemIconYOffset = {}
-
-GUIProtoBuyMenu.kEquippedIconTopOffset = 58
-
 function GUIProtoBuyMenu:SetHostStructure(hostStructure)
 
     self.hostStructure = hostStructure
     self:_InitializeItemButtons()
-    self.selectedItem = nil
-
     
 end
 
@@ -247,8 +219,8 @@ function GUIProtoBuyMenu:Initialize()
     self:_InitializeResourceDisplay()
     self:_InitializeCloseButton()
     self:_InitializeEquipped()    
-	self:_InitializeRefundButton()
-
+    self:_InitializeConfirmButton()
+    self:_InitializeExoButtons()
     // note: items buttons get initialized through SetHostStructure()
     MarineBuy_OnOpen()
     
@@ -296,7 +268,8 @@ function GUIProtoBuyMenu:Update(deltaTime)
     self:_UpdateContent(deltaTime)
     self:_UpdateResourceDisplay(deltaTime)
     self:_UpdateCloseButton(deltaTime)
-    self:_UpdateRefundButton(deltaTime)   
+    self:_UpdateConfirmButton(deltaTime)
+    self:_UpdateExoButtons()
 end
 
 function GUIProtoBuyMenu:Uninitialize()
@@ -308,7 +281,8 @@ function GUIProtoBuyMenu:Uninitialize()
     self:_UninitializeContent()
     self:_UninitializeResourceDisplay()
     self:_UninitializeCloseButton()
-    self:_UninitializeRefundButton()
+    self:_UninitializeConfirmButton()
+    self:_UninitializeExoButtons()
 end
 
 local function MoveDownAnim(script, item)
@@ -385,7 +359,7 @@ function GUIProtoBuyMenu:_InitializeEquipped()
     self.equipped = { }
     
     local equippedTechIds = MarineBuy_GetEquipped()
-    local selectorPosX = -GUIProtoBuyMenu.kSelectorSize.y + GUIProtoBuyMenu.kPadding
+    local selectorPosX = -GUIProtoBuyMenu.kSelectorSize.x + GUIProtoBuyMenu.kPadding
     
     for k, itemTechId in ipairs(equippedTechIds) do
     
@@ -406,7 +380,7 @@ end
 function GUIProtoBuyMenu:_InitializeItemButtons()
     
     self.menu = GetGUIManager():CreateGraphicItem()
-    self.menu:SetPosition(Vector( -GUIProtoBuyMenu.kMenuWidth  - GUIProtoBuyMenu.kPadding, 0, 0))
+    self.menu:SetPosition(Vector( -GUIProtoBuyMenu.kMenuWidth - GUIProtoBuyMenu.kPadding, 0, 0))
     self.menu:SetTexture(GUIProtoBuyMenu.kContentBgTexture)
     self.menu:SetSize(Vector(GUIProtoBuyMenu.kMenuWidth, GUIProtoBuyMenu.kBackgroundHeight, 0))
     self.menu:SetTexturePixelCoordinates(0, 0, GUIProtoBuyMenu.kMenuWidth, GUIProtoBuyMenu.kBackgroundHeight)
@@ -430,9 +404,6 @@ function GUIProtoBuyMenu:_InitializeItemButtons()
     self.menuHeader:AddChild(self.menuHeaderTitle)
     
     self.itemButtons = { }
-    
-    xOffset  = 0
-
     
     local itemTechIdList = self.hostStructure:GetItemList(Client.GetLocalPlayer())
     local selectorPosX = -GUIProtoBuyMenu.kSelectorSize.x + GUIProtoBuyMenu.kPadding
@@ -497,115 +468,13 @@ function GUIProtoBuyMenu:_InitializeItemButtons()
     
     
     
-    local z = 1
-    xOffset  = 0
-    
-    GUIProtoBuyMenu.kExoButtonMaps = {
-        
-        kTechId.MedPack,
-	    kTechId.CatPack,
-        kTechId.Scan,
-        kTechId.LayMines,
-        
-}
     
     
- 
     
-    for z, itemData in ipairs(GUIProtoBuyMenu.kExoButtonMaps) do
-    
-        local itemNr = 1
-    
-        if z > 1 then
-				xOffset = xOffset + GUIProtoBuyMenu.kSmallIconOffset_x
-        end
-    
-        local graphicItem = GUIManager:CreateGraphicItem()
-        graphicItem:SetSize(GUIProtoBuyMenu.kSmallIconSize)
-        graphicItem:SetAnchor(GUIItem.Middle, GUIItem.Top)
-        graphicItem:SetPosition(Vector(GUIProtoBuyMenu.kPadding + xOffset, GUIProtoBuyMenu.kIconTopOffset + (GUIProtoBuyMenu.kSmallIconSize.y) * itemNr - GUIProtoBuyMenu.kSmallIconSize.y, 0))
-        graphicItem:SetTexture(kInventoryIconsTexture)
-        graphicItem:SetTexture(GUIProtoBuyMenu.kSmallIconTexture)
-        graphicItem:SetTexturePixelCoordinates(GetSmallIconPixelCoordinates(itemTechId))
-       
-
-        local graphicItemActive = GUIManager:CreateGraphicItem()
-        graphicItemActive:SetSize(GUIProtoBuyMenu.kSelectorSize)
-        
-        graphicItemActive:SetPosition(Vector(selectorPosX, -GUIProtoBuyMenu.kSelectorSize.y / 2, 0))
-        graphicItemActive:SetAnchor(GUIItem.Right, GUIItem.Center)
-        graphicItemActive:SetTexture(GUIProtoBuyMenu.kMenuSelectionTexture)
-        graphicItemActive:SetIsVisible(false)
-        
-        graphicItem:AddChild(graphicItemActive)
-        
-        local costIcon = GUIManager:CreateGraphicItem()
-        costIcon:SetSize(Vector(GUIProtoBuyMenu.kResourceIconWidth * 0.8, GUIProtoBuyMenu.kResourceIconHeight * 0.8, 0))
-        costIcon:SetAnchor(GUIItem.Right, GUIItem.Bottom)
-        costIcon:SetPosition(Vector(-32, -GUIProtoBuyMenu.kResourceIconHeight * 0.5, 0))
-        costIcon:SetTexture(GUIProtoBuyMenu.kResourceIconTexture)
-        costIcon:SetColor(GUIProtoBuyMenu.kTextColor)
-        
-        local selectedArrow = GUIManager:CreateGraphicItem()
-        selectedArrow:SetSize(Vector(GUIProtoBuyMenu.kArrowWidth, GUIProtoBuyMenu.kArrowHeight, 0))
-        selectedArrow:SetAnchor(GUIItem.Left, GUIItem.Center)
-        selectedArrow:SetPosition(Vector(-GUIProtoBuyMenu.kArrowWidth - GUIProtoBuyMenu.kPadding, -GUIProtoBuyMenu.kArrowHeight * 0.5, 0))
-        selectedArrow:SetTexture(GUIProtoBuyMenu.kArrowTexture)
-        selectedArrow:SetColor(GUIProtoBuyMenu.kTextColor)
-        selectedArrow:SetTextureCoordinates(unpack(GUIProtoBuyMenu.kArrowTexCoords))
-        selectedArrow:SetIsVisible(false)
-        
-        graphicItem:AddChild(selectedArrow) 
-        
-        local itemCost = GUIManager:CreateTextItem()
-        itemCost:SetFontName(GUIProtoBuyMenu.kFont)
-        itemCost:SetFontIsBold(true)
-        itemCost:SetAnchor(GUIItem.Right, GUIItem.Center)
-        itemCost:SetPosition(Vector(0, 0, 0))
-        itemCost:SetTextAlignmentX(GUIItem.Align_Min)
-        itemCost:SetTextAlignmentY(GUIItem.Align_Center)
-        itemCost:SetScale(fontScaleVector)
-        itemCost:SetColor(GUIProtoBuyMenu.kTextColor)
-        itemCost:SetText(ToString(LookupTechData(itemTechId, kTechDataCostKey, 0)))
-        
-        costIcon:AddChild(itemCost)  
-        
-        graphicItem:AddChild(costIcon)  
-        
-        self.menu:AddChild(graphicItem)
-        table.insert(self.itemButtons, { Button = graphicItem, Highlight = graphicItemActive, TechId = itemTechId, Cost = itemCost, ResourceIcon = costIcon, Arrow = selectedArrow } )
-    
-    end
+    // to prevent wrong display before the first update
+    self:_UpdateItemButtons(0)
 
 end
-
-
- 
-/*
-function GUIProtoBuyMenu:Something()
-    
-    self.exoButtons = {}
-    
-    for moduleNum, moduleDetails in ipairs(GUIProtoBuyMenu.kExoButtonMaps.leftArm) do
-        
-        local button = create button
-        
-        button.details = moduleDetails
-        button:SetLabel(moduleDetails.label)
-        button:SetImage(moduleDetails.buttonImages.normal)
-        button:SetPosition( Vector( 50, 50 + 20*moduleNum, 0) )
-        // etc
-        
-        self.content:AddChild(button)
-        
-        table.insert(self.exoButtons, button)
-        
-    end
-    
-    // same for other panels
-    
-end*/
-
 
 local gResearchToWeaponIds = nil
 local function GetItemTechId(researchTechId)
@@ -689,25 +558,266 @@ function GUIProtoBuyMenu:_UninitializeItemButtons()
 
 end
 
+
+function GUIProtoBuyMenu:_InitializeExoButtons()
+   
+    self.GUIItems = {}
+    self.buttonList = {}
+    self.modulePanelMap = {   
+      
+       leftArm = {
+            title = "LEFT ARM",
+            dimensionData = { x = 50, y = 150, width = 120, height = 50 },
+            moduleButtonDataList = {
+              { name = "Welder",
+                powerCost = 10,
+                texturePathMap = {
+                  disabled = "ui/egg.dds",
+                  normal = "ui/marine_welder.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
+                },
+              },
+              { name = "Minigun",
+                powerCost = 10,
+                texturePathMap = {
+                  disabled = "ui/egg.dds",
+                  normal = "models/marine/exosuit/minigun.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
+                },
+              }, 
+              { name = "Railgun",
+                powerCost = 15,
+                texturePathMap = {
+                  disabled = "ui/egg.dds",
+                  normal = "models/marine/exosuit/railgun.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
+                },
+              },
+              { name = "Flamethrower",
+                powerCost = 20,
+                texturePathMap = {
+                  disabled = "ui/egg.dds",
+                  normal = "ui/FlamethrowerDisplay.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
+                },
+              },
+            },
+          },
+        
+
+
+        rightArm = {
+            title = "RIGHT ARM",
+            dimensionData = { x =700, y = 150, width = 120, height = 50 },
+            moduleButtonDataList = {
+              { name = "Welder",
+                powerCost = 10,
+                texturePathMap = {
+                  disabled = "ui/egg.dds",
+                  normal = "ui/marine_welder.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
+                },
+              },
+              { name = "Minigun",
+                powerCost = 10,
+                texturePathMap = {
+                  disabled = "ui/egg.dds",
+                  normal = "models/marine/exosuit/minigun.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
+                },
+              },
+              { name = "Railgun",
+                powerCost = 15,
+                texturePathMap = {
+                  disabled = "ui/egg.dds",
+                  normal = "models/marine/exosuit/railgun.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
+                },
+              },
+              { name = "Flamethrower",
+                powerCost = 20,
+                texturePathMap = {
+                  disabled = "ui/egg.dds",
+                  normal = "ui/FlamethrowerDisplay.dds",
+                  hover = "ui/egg.dds",
+                  selected = "ui/egg.dds",
+                },
+               },
+            },
+          }, 
+         
+       powerOutput = {
+            title = "POWER OUTPUT",
+            dimensionData = { x = 100, y = 50, width = 120, height = 50},
+            moduleButtonDataList = {
+                  { name = "15",
+                    powerCost = 15,
+                    texturePathMap = {
+                       disabled = "ui/egg.dds",
+                       normal = "ui/marine_welder.dds",
+                       hover = "ui/egg.dds",
+                       selected = "ui/egg.dds",
+                    },
+                },
+                  { name = "20",
+                    powerCost = 20,
+                    texturePathMap = {
+                      disabled = "ui/egg.dds",
+                      normal = "ui/marine_welder.dds",
+                      hover = "ui/egg.dds",
+                      selected = "ui/egg.dds",
+                    },
+                },
+                  { name = "25",
+                    powerCost = 25,
+                    texturePathMap = {
+                      disabled = "ui/egg.dds",
+                      normal = "ui/marine_welder.dds",
+                      hover = "ui/egg.dds",
+                      selected = "ui/egg.dds",
+                    },
+                },
+                  { name = "30",
+                    powerCost = 30,
+                    texturePathMap = {
+                      disabled = "ui/egg.dds",
+                      normal = "ui/marine_welder.dds",
+                      hover = "ui/egg.dds",
+                      selected = "ui/egg.dds",
+                    },
+                },
+                  { name = "40",
+                    powerCost = 40,
+                    texturePathMap = {
+                      disabled = "ui/egg.dds",
+                      normal = "ui/marine_welder.dds",
+                      hover = "ui/egg.dds",
+                      selected = "ui/egg.dds",
+                    },
+                },
+              },
+            },
+    
+    }
+    
+    local eggsPerRow = 8
+     
+    for panelName, panelData in pairs(self.modulePanelMap) do
+    
+            local panelBox = GUIManager:CreateGraphicItem()
+        panelBox:SetTexture( GUIProtoBuyMenu.kContentBgTexture )
+        panelBox:SetColor( GUIProtoBuyMenu.kTextColor)
+        panelBox:SetPosition(Vector(panelData.dimensionData.x , panelData.dimensionData.y, 0 ))
+       panelBox:SetSize(Vector( panelData.dimensionData.width, panelData.dimensionData.height, 0 ))
+        //boxButton:AddChild(eggImage)
+       
+        self.content:AddChild(panelBox)
+
+        table.insert(self.GUIItems, panelBox)
+        table.insert(self.modulePanelMap, panelBox)  
+        
+         local panelText = GUIManager:CreateTextItem()
+        panelText:SetFontName( "fonts/AgencyFB_small.fnt" )
+        panelText:SetFontIsBold(true)
+        panelText:SetPosition(Vector(10, 40, 0))
+        panelText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
+        panelText:SetTextAlignmentX(GUIItem.Align_Min)
+        panelText:SetTextAlignmentY(GUIItem.Align_Max)
+        panelText:SetColor(Color(kMarineFontColor))
+        panelText:SetText(panelData.title)
+        panelBox:AddChild(panelText)
+        table.insert(self.GUIItems, panelText)
+        
+        
+      
+     
+ 
+      for moduleButtonNum, moduleButtonData in ipairs(panelData.moduleButtonDataList) do
+        
+        if panelData.title == "RIGHT ARM" then
+                  PosX = 700
+                  PosY = 250
+                  offsetX = 0
+                  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
+        elseif panelData.title == "POWER OUTPUT" then
+                  PosX =  250
+                  PosY = 75
+                  offsetX = ((moduleButtonNum-1)%eggsPerRow)*100 
+                  offsetY = 0
+        elseif panelData.title == "LEFT ARM" then
+                  PosX = 50
+                  PosY = 250
+                  offsetX = 0
+                  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
+        end
+            
+         
+        local boxButton = GUIManager:CreateGraphicItem()
+        boxButton:SetTexture( "ui/menu/repeating_bg.dds" )
+        boxButton:SetColor(kEquippedColor)
+        boxButton:SetPosition(Vector(PosX + offsetX, PosY + offsetY, 0 ))
+        boxButton:SetSize(Vector( 50, 50, 0 ))
+        self.content:AddChild(boxButton)
+
+        
+        table.insert(self.GUIItems, boxButton)
+        table.insert(self.buttonList, boxButton)
+
+ 
+        
+        local moduleText = GUIManager:CreateTextItem()
+        moduleText:SetFontName( "fonts/AgencyFB_small.fnt" )
+        moduleText:SetFontIsBold(true)
+        moduleText:SetPosition(Vector(0, 0, 0))
+        moduleText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
+        moduleText:SetTextAlignmentX(GUIItem.Align_Min)
+        moduleText:SetTextAlignmentY(GUIItem.Align_Max)
+        moduleText:SetColor(Color(kMarineFontColor))
+        moduleText:SetText(moduleButtonData.name)
+        boxButton:AddChild(moduleText)
+
+       /*   local powoutText = GUIManager:CreateTextItem()
+        powoutText:SetFontName( "fonts/AgencyFB_small.fnt" )
+        powoutText:SetFontIsBold(true)
+        powoutText:SetPosition(Vector(0, 0, 0))
+        powoutText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
+        powoutText:SetTextAlignmentX(GUIItem.Align_Min)
+        powoutText:SetTextAlignmentY(GUIItem.Align_Max)
+        powoutText:SetColor(Color(kMarineFontColor))
+        powoutText:SetText(moduleButtonData.powername)
+        boxButton:AddChild(powoutText)*/
+        
+        table.insert(self.GUIItems, moduleText)
+
+                local powerText = GUIManager:CreateTextItem()
+        powerText:SetFontName( "fonts/AgencyFB_small.fnt" )
+        powerText:SetFontIsBold(true)
+        powerText:SetPosition(Vector(25, 12.5, 0))
+        powerText:SetAnchor(        GUIItem.Left, GUIItem.Top        )
+        powerText:SetTextAlignmentX(GUIItem.Align_Center)
+        powerText:SetTextAlignmentY(GUIItem.Align_Center)
+        powerText:SetColor(Color(kMarineFontColor))
+        powerText:SetText(tostring(moduleButtonData.powerCost))
+        boxButton:AddChild(powerText)
+
+        table.insert(self.GUIItems, powerText)
+        
+        
+
+        
+      end
+    end    
+
+end    
+    
 function GUIProtoBuyMenu:_InitializeContent()
-		local offset = 50
-    
-    self.testText = GUIManager:CreateTextItem()
-    self.testText:SetFontName(GUIProtoBuyMenu.kFont)
-    self.testText:SetFontIsBold(true)
-    self.testText:SetAnchor(GUIItem.Left, GUIItem.Top)
-    self.testText:SetPosition(Vector(
-        GUIProtoBuyMenu.kItemNameOffsetX ,
-        GUIProtoBuyMenu.kItemNameOffsetY+GUIScale(offset), 0
-    ))
-    self.testText:SetTextAlignmentX(GUIItem.Align_Min)
-    self.testText:SetTextAlignmentY(GUIItem.Align_Min)
-    self.testText:SetColor(Color(
-        0, 1, 0, 1
-    ))
-    self.testText:SetText("Hello!")
-    
-    self.content:AddChild(self.testText)
 
     self.itemName = GUIManager:CreateTextItem()
     self.itemName:SetFontName(GUIProtoBuyMenu.kFont)
@@ -859,7 +969,7 @@ function GUIProtoBuyMenu:_InitializeCloseButton()
     self.closeButton = GUIManager:CreateGraphicItem()
     self.closeButton:SetAnchor(GUIItem.Right, GUIItem.Bottom)
     self.closeButton:SetSize(Vector(GUIProtoBuyMenu.kButtonWidth, GUIProtoBuyMenu.kButtonHeight, 0))
-    self.closeButton:SetPosition(Vector(-GUIProtoBuyMenu.kButtonWidth*1, GUIProtoBuyMenu.kPadding, 0))
+    self.closeButton:SetPosition(Vector(-GUIProtoBuyMenu.kButtonWidth, GUIProtoBuyMenu.kPadding, 0))
     self.closeButton:SetTexture(GUIProtoBuyMenu.kButtonTexture)
     self.closeButton:SetLayer(kGUILayerPlayerHUDForeground4)
     self.content:AddChild(self.closeButton)
@@ -876,6 +986,37 @@ function GUIProtoBuyMenu:_InitializeCloseButton()
     
 end
 
+function GUIProtoBuyMenu:_InitializeConfirmButton()
+
+     self.confirmButton = GUIManager:CreateGraphicItem()
+    self.confirmButton:SetAnchor(GUIItem.Right, GUIItem.Bottom)
+    self.confirmButton:SetSize(Vector(GUIProtoBuyMenu.kButtonWidth, GUIProtoBuyMenu.kButtonHeight, 0))
+    self.confirmButton:SetPosition(Vector(-GUIProtoBuyMenu.kButtonWidth*4, GUIProtoBuyMenu.kPadding*(-12), 0))
+    self.confirmButton:SetTexture(GUIProtoBuyMenu.kButtonTexture)
+    self.confirmButton:SetLayer(kGUILayerPlayerHUDForeground4)
+    self.content:AddChild(self.confirmButton)
+    
+    self.confirmButtonText = GUIManager:CreateTextItem()
+    self.confirmButtonText:SetAnchor(GUIItem.Middle, GUIItem.Center)
+    self.confirmButtonText:SetFontName(GUIProtoBuyMenu.kFont)
+    self.confirmButtonText:SetTextAlignmentX(GUIItem.Align_Center)
+    self.confirmButtonText:SetTextAlignmentY(GUIItem.Align_Center)
+    self.confirmButtonText:SetText(Locale.ResolveString("Confirm"))
+    self.confirmButtonText:SetFontIsBold(true)
+    self.confirmButtonText:SetColor(GUIProtoBuyMenu.kCloseButtonColor)
+    self.confirmButton:AddChild(self.confirmButtonText)
+end    
+
+function GUIProtoBuyMenu:_UpdateConfirmButton(deltaTime)
+
+    if GetIsMouseOver(self, self.confirmButton) then
+        self.confirmButton:SetColor(Color(1, 1, 1, 1))
+    else
+        self.confirmButton:SetColor(Color(0.5, 0.5, 0.5, 1))
+    end
+    
+end
+
 function GUIProtoBuyMenu:_UpdateCloseButton(deltaTime)
 
     if GetIsMouseOver(self, self.closeButton) then
@@ -886,6 +1027,18 @@ function GUIProtoBuyMenu:_UpdateCloseButton(deltaTime)
     
 end
 
+function GUIProtoBuyMenu:_UpdateExoButtons(deltaTime)
+
+    for buttonNum, button in ipairs(self.buttonList) do
+
+        if GetIsMouseOver(self, button) then
+            button:SetColor(Color(1, 1, 1, 1))
+        else
+            button:SetColor(Color(0.5, 0.5, 0.5, 1))
+        end
+   end 
+end
+
 function GUIProtoBuyMenu:_UninitializeCloseButton()
     
     GUI.DestroyItem(self.closeButton)
@@ -893,56 +1046,19 @@ function GUIProtoBuyMenu:_UninitializeCloseButton()
 
 end
 
-function GUIProtoBuyMenu:_InitializeRefundButton()
-    self.refundButton = GUIManager:CreateGraphicItem()
-    self.refundButton:SetAnchor(GUIItem.Right, GUIItem.Bottom)
-    self.refundButton:SetSize(Vector(GUIProtoBuyMenu.kButtonWidth, GUIProtoBuyMenu.kButtonHeight, 0))
-    self.refundButton:SetPosition(Vector(-GUIProtoBuyMenu.kButtonWidth * 2 - GUIProtoBuyMenu.kPadding, GUIProtoBuyMenu.kPadding, 0))
-    self.refundButton:SetTexture(GUIProtoBuyMenu.kButtonTexture)
-    self.refundButton:SetLayer(kGUILayerPlayerHUDForeground4)
-    self.content:AddChild(self.refundButton)
+function GUIProtoBuyMenu:_UninitializeExoButtons()
     
-    self.refundButtonText = GUIManager:CreateTextItem()
-    self.refundButtonText:SetAnchor(GUIItem.Middle, GUIItem.Center)
-    self.refundButtonText:SetFontName(GUIProtoBuyMenu.kFont)
-    self.refundButtonText:SetTextAlignmentX(GUIItem.Align_Center)
-    self.refundButtonText:SetTextAlignmentY(GUIItem.Align_Center)
-	self.refundButtonText:SetText(Locale.ResolveString("COMBAT_REFUND_MARINE"))
-    self.refundButtonText:SetFontIsBold(true)
-    self.refundButtonText:SetColor(GUIProtoBuyMenu.kCloseButtonColor)
-    self.refundButton:AddChild(self.refundButtonText)
-end
-
-function GUIProtoBuyMenu:_UpdateRefundButton(deltaTime)
-
-    if self:_GetIsMouseOver(self.refundButton) then
-        self.refundButton:SetColor(Color(1, 1, 1, 1))
-        // the discription text under the buttons
-		self.itemName:SetText(Locale.ResolveString("COMBAT_REFUND_TITLE_MARINE"))
-        self.itemDescription:SetText(Locale.ResolveString("COMBAT_REFUND_DESCRIPTION_MARINE"))
-        self.itemDescription:SetTextClipped(true, GUIProtoBuyMenu.kItemDescriptionSize.x - 2* GUIProtoBuyMenu.kPadding, GUIProtoBuyMenu.kItemDescriptionSize.y - GUIProtoBuyMenu.kPadding)
-		self.itemName:SetIsVisible(true)
-		self.itemDescription:SetIsVisible(true)
-    else
-        self.refundButton:SetColor(Color(0.5, 0.5, 0.5, 1))
+    for itemNum, item in ipairs(self.GUIItems) do
+        GUI.DestroyItem(item)
     end
 
 end
 
-function GUIProtoBuyMenu:_UninitializeRefundButton()
-    GUI.DestroyItem(self.refundButton)
-    self.refundButton = nil
-end
-
-function GUIProtoBuyMenu:_GetIsMouseOver(overItem)
-
-    local mouseOver = GUIItemContainsPoint(overItem, Client.GetCursorPosScreen())
-    if mouseOver and not self.mouseOverStates[overItem] then
-        MarineBuy_OnMouseOver()
-    end
-    self.mouseOverStates[overItem] = mouseOver
-    return mouseOver
+function GUIProtoBuyMenu:_UninitializeConfirmButton()
     
+    GUI.DestroyItem(self.confirmButton)
+    self.confirmButton = nil
+
 end
 
 function GUIProtoBuyMenu:_GetResearchInfo(techId)
