@@ -558,23 +558,34 @@ GUIProtoBuyMenu.slotTypePanelData = {
       
        [kExoModuleSlots.LeftArm]  = {
 			title = "LEFT ARM",
-            dimensionData = { x = 50, y = 150, width = 120, height = 50 },
+            x = 50, 
+			y = 150, 
+			width = 120, 
+			height = 50, 
           },
 
        [kExoModuleSlots.RightArm] = {
             title = "RIGHT ARM",
-            dimensionData = { x =700, y = 150, width = 120, height = 50 },
+            x =700, 
+			y = 150,
+			width = 120, 
+			height = 50 ,
 
           }, 
          
        [kExoModuleSlots.PowerSupply] = {
             title = "POWER OUTPUT",
-            dimensionData = { x = 100, y = 50, width = 120, height = 50},
+             x = 100, 
+			 y = 50, 
+			 width = 120,
+			 height = 50,
+			 
           },
 		  
 		  
 }
 
+local buttonNum = 0
 
 function GUIProtoBuyMenu:_InitializeExoButtons()
    
@@ -591,9 +602,8 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
 		local panelBox = GUIManager:CreateGraphicItem()
 		panelBox:SetTexture( GUIProtoBuyMenu.kContentBgTexture )
 		panelBox:SetColor( GUIProtoBuyMenu.kTextColor)
-		panelBox:SetPosition(Vector(panelData.dimensionData.x , panelData.dimensionData.y, 0 ))
-		panelBox:SetSize(Vector( panelData.dimensionData.width, panelData.dimensionData.height, 0 ))
-		//boxButton:AddChild(eggImage)
+		panelBox:SetPosition(Vector( panelData.x , panelData.y, 0 ))
+		panelBox:SetSize(Vector( panelData.width, panelData.height, 0 ))
 	   
 		self.content:AddChild(panelBox)
 
@@ -615,26 +625,26 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
        
 	for moduleType, moduleTypeData in pairs(kExoModuleTypesData) do
         
-		if modelTypeData.category == kExoSlotTypeData[panelSlotType].category then
+		if moduleTypeData.category == kExoModuleSlotsData[panelSlotType].category then
 
 			
 			if panelData.title == "RIGHT ARM" then
 			  PosX = 700
 			  PosY = 250
 			  offsetX = 0
-			  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
+			  offsetY = ((buttonNum-1)%eggsPerRow)*80 
 			  
 			elseif panelData.title == "POWER OUTPUT" then
 			  PosX =  250
 			  PosY = 75
-			  offsetX = ((moduleButtonNum-1)%eggsPerRow)*100 
+			  offsetX = ((buttonNum-1)%eggsPerRow)*100 
 			  offsetY = 0
 			  
 			elseif panelData.title == "LEFT ARM" then
 			  PosX = 50
 			  PosY = 250
 			  offsetX = 0
-			  offsetY = ((moduleButtonNum-1)%eggsPerRow)*80 
+			  offsetY = ((buttonNum-1)%eggsPerRow)*80 
 			  
 			end
 				
@@ -652,7 +662,7 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
 
 	 
 			
-			local moduleText = GUIManager:CreateTextItem()
+			/*local moduleText = GUIManager:CreateTextItem()
 			moduleText:SetFontName( "fonts/AgencyFB_small.fnt" )
 			moduleText:SetFontIsBold(true)
 			moduleText:SetPosition(Vector(0, 0, 0))
@@ -661,7 +671,7 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
 			moduleText:SetTextAlignmentY(GUIItem.Align_Max)
 			moduleText:SetColor(Color(kMarineFontColor))
 			moduleText:SetText(moduleButtonData.name)
-			boxButton:AddChild(moduleText)
+			boxButton:AddChild(moduleText)*/
 
 		   /*   local powoutText = GUIManager:CreateTextItem()
 			powoutText:SetFontName( "fonts/AgencyFB_small.fnt" )
@@ -676,7 +686,7 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
 			
 			table.insert(self.GUIItems, moduleText)
 
-					local powerText = GUIManager:CreateTextItem()
+			/*		local powerText = GUIManager:CreateTextItem()
 			powerText:SetFontName( "fonts/AgencyFB_small.fnt" )
 			powerText:SetFontIsBold(true)
 			powerText:SetPosition(Vector(25, 12.5, 0))
@@ -685,11 +695,12 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
 			powerText:SetTextAlignmentY(GUIItem.Align_Center)
 			powerText:SetColor(Color(kMarineFontColor))
 			powerText:SetText(tostring(moduleButtonData.powerCost))
-			boxButton:AddChild(powerText)
+			boxButton:AddChild(powerText)*/
 
 			table.insert(self.GUIItems, powerText)
 			
-			
+			buttonNum = buttonNum+1
+
 
         
       end
