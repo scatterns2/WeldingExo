@@ -1,4 +1,4 @@
-// ======= Copyright (c) 2012, Unknown Worlds Entertainment, Inc. All rights reserved. ============
+
 //
 // lua\Exo.lua
 //
@@ -43,7 +43,7 @@ Exo.kPlayerPhaseDelay = 2
 
 local networkVars =
 {
-
+	scannerEntId = "entityid",
     isShieldActive = "boolean",
     flashlightOn = "boolean",
     flashlightLastFrame = "private boolean",
@@ -186,7 +186,8 @@ end
 function Exo:OnCreate()
 
     Player.OnCreate(self)
-    
+	
+	
     InitMixin(self, BaseMoveMixin, { kGravity = Player.kGravity })
     InitMixin(self, GroundMoveMixin)
     InitMixin(self, VortexAbleMixin)
@@ -211,6 +212,8 @@ function Exo:OnCreate()
     if Server then
         self:AddTimedCallback(SmashNearbyEggs, 0.1)
         self.isShieldActive = false // just for testing
+		self.scannerEntId = Entity.invalidId
+
     end
     
     self.deployed = false
@@ -312,7 +315,6 @@ function Exo:OnInitialized()
     end
     
 	 self.wasScanButtonDown = false
-
 	
     InitMixin(self, OrdersMixin, { kMoveOrderCompleteDistance = kPlayerMoveOrderCompleteDistance })
     InitMixin(self, NanoShieldMixin)
@@ -485,9 +487,10 @@ end
 
 function Exo:OnDestroy()
    
-	if self.scannerEnt then
-		Client.DestroyEntity(self.scannerEnt)
+	if Server and self.scannerEnt then
+		Server.DestroyEntity(self.scannerEnt)
 	end
+
    
     if self.flashlight ~= nil then
         Client.DestroyRenderLight(self.flashlight)
@@ -961,6 +964,9 @@ if Client then
         
         Player.OnUpdateRender(self)
         
+		local scannerEnt = Shared.GetEntity(self.scannerEntId)
+
+		
         local localPlayer = Client.GetLocalPlayer()
         local showHighlight = localPlayer ~= nil and localPlayer:isa("Alien") and self:GetIsAlive()
         
@@ -1146,13 +1152,21 @@ function Exo:HandleButtons(input)
        self:EjectExo()
     end
     
+    local scannerEnt
+  
+	if Server then
+		scannerEnt = self.scannerEnt
+	elseif Client then
+		scannerEnt = Shared.GetEntity(self.scannerEntId)
+	end
+
+	
 	if bit.band(input.commands, Move.Weapon2) then
 		
 		if not self.wasScanButtonDown then
-			if not self.scannerEnt then
-				
-
-				self.scannerEnt:OnScanButton() 
+			if  scannerEnt then
+				self.scannerEnt:OnScanButton()
+				print("hello")
 			end
 		end
 		
