@@ -1,4 +1,4 @@
-
+// ======= Copyright (c) 2012, Unknown Worlds Entertainment, Inc. All rights reserved. ============
 //
 // lua\Exo.lua
 //
@@ -1161,12 +1161,12 @@ function Exo:HandleButtons(input)
 	end
 
 	
-	if bit.band(input.commands, Move.Weapon2) then
+	if bit.band(input.commands, Move.Weapon2) ~= 0 then
 		
 		if not self.wasScanButtonDown then
 			if  scannerEnt then
-				self.scannerEnt:OnScanButton()
-				print("hello")
+				scannerEnt:OnScanButton()
+				Print("poo")
 			end
 		end
 		
@@ -1480,7 +1480,7 @@ if Server then
     end
     
     function Exo:AttemptToBuy(techIds)
-
+	error("This should not be called!")
         local techId = techIds[1]
         local success = false
         
