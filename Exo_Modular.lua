@@ -3,7 +3,7 @@ Script.Load("lua/Weapons/Marine/Railgun.lua")
 Script.Load("lua/Weapons/Marine/Claw.lua")
 Script.Load("lua/Weapons/Marine/ExoWelder.lua")
 Script.Load("lua/Weapons/Marine/ExoFlamer.lua")
-Script.Load("lua/Weapons/Marine/ExoScanner.lua")
+Script.Load("lua/Weapons/Marine/ExoScan.lua")
 Script.Load("lua/Weapons/Marine/ExoShield.lua")
 Script.Load("lua/Exo.lua")
 Script.Load("lua/Mixins/JumpMoveMixin.lua")
@@ -210,7 +210,7 @@ kExoModuleTypesData = {
         label = "EXO_UTILITY_SCANNER", tooltip = "EXO_UTILITY_SCANNER_TOOLTIP",
         category = kExoModuleCategories.Utility,
         powerCost = 20,
-        mapName = ExoScanner.kMapName,
+        mapName = ExoScan.kMapName,
     },
 }
 
@@ -301,10 +301,10 @@ local orig_Exo_InitExoModel = Exo.InitExoModel
 function Exo:InitExoModel()
 	
     local leftArmType = kExoModuleTypesData[self.leftArmModuleType].armType
-    local rightArmType = kExoModuleTypes[self.rightArmModuleType].armType
-    local modelInfo = kExoWeaponRightLeftComboModels[rightArmType][leftArmType]
-    local modelName = modelInfo.worldModel
-    local graphName = modelInfo.worldAnimGraph
+    local rightArmType = kExoModuleTypesData[self.rightArmModuleType].armType
+    local modelData = kExoWeaponRightLeftComboModels[rightArmType][leftArmType]
+    local modelName = modelData.worldModel
+    local graphName = modelData.worldAnimGraph
     self:SetModel(modelName, graphName)
     self.viewModelName = modelData.viewModel
     self.viewModelGraphName = modelData.viewAnimGraph
@@ -336,7 +336,8 @@ function Exo:InitWeapons()
     self.inventoryWeight = weaponHolder:GetInventoryWeight(self)
     self:SetActiveWeapon(ExoWeaponHolder.kMapName)
     StartSoundEffectForPlayer(kDeploy2DSound, self)
-
+    
+end
 
 Class_Reload("Exo", networkVars)
 
