@@ -8,6 +8,111 @@ Script.Load("lua/Weapons/Marine/ExoShield.lua")
 Script.Load("lua/Exo.lua")
 Script.Load("lua/Mixins/JumpMoveMixin.lua")
 Script.Load("lua/Exo_ModularData.lua")
+Script.Load("lua/Exo_ModularNetworkMessages.lua")
+
+if Server then
+    local function OnMessageExoModularBuy(client, message)
+    
+    local player = client:GetControllingPlayer()
+    
+    if player and player:GetIsAllowedToBuy() and player.ProcessExoModularBuyAction then
+
+        player:ProcessExoModularBuyAction(message)
+        
+    end
+
+        Server.HookNetworkMessage("ExoModularBuy", kBuyMessage)
+              
+    end
+    
+    local function FindExoSpawnPoint(self)
+    
+     local maxAttempts = 100
+        for index = 1, maxAttempts do
+        
+            // Find open area nearby to place the big guy.
+            local capsuleHeight, capsuleRadius = self:GetTraceCapsule()
+            local extents = Vector(Exo.kXZExtents, Exo.kYExtents, Exo.kXZExtents)
+
+            local spawnPoint        
+            local checkPoint = self:GetOrigin() + Vector(0, 0.02, 0)
+            
+            if GetHasRoomForCapsule(extents, checkPoint + Vector(0, extents.y, 0), CollisionRep.Move, PhysicsMask.Evolve, self) then
+                spawnPoint = checkPoint
+            else
+                spawnPoint = GetRandomSpawnForCapsule(extents.y, extents.x, checkPoint, 0.5, 5, EntityFilterOne(self))
+            end    
+                
+            local weapons 
+
+            if spawnPoint then
+                return spawnPoint
+            end
+        end
+    end
+
+            
+    local function HandleExoModularBuy(self, message)
+        
+        local exoVariables = message
+
+        local exoConfig = {}
+        exoConfig[kExoSlots.LeftArm] = message.leftArmModuleType
+        exoConfig[kExoSlots.RightArm] = message.rightArmModuleType
+        exoConfig[kExoSlots.PowerSupply] = message.powerModuleType
+        exoConfig[kExoSlots.Armor] = message.armorModuleType
+        exoConfig[kExoSlots.Utility] = message.utilityModuleType
+        
+        if not Exo_Modular_GetIsConfigValid(exoConfig) then
+            return
+        end
+ 
+        local spawnPoint = FindExoSpawnPoint(self)
+        if spawnPoint == nil then
+            return
+        end
+
+            
+        self:AddResources(-GetCostForTech(techId))
+        local weapons = self:GetWeapons()
+        for i = 1, #weapons do            
+            weapons[i]:SetParent(nil)            
+        end
+        
+        local exo = self:Replace(Exo.kMapName, self:GetTeamNumber(), false, spawnPoint, exoVariables)
+        StorePrevPlayer(self, exo)        
+                       
+        if exo then                
+            for i = 1, #weapons do
+                exo:StoreWeapon(weapons[i])
+            end            
+        end
+        
+        exo:TriggerEffects("spawn_exo")
+                
+          
+            
+        
+        
+        
+    end
+
+    
+    function Exo:ProcessExoModularBuyAction(message)
+
+        HandleExoModularBuy(message)
+    
+    end
+
+    
+    function Marine:ProcessExoModularBuyAction(message)
+        
+        HandleExoModularBuy(message)
+
+    end
+
+    
+end
 
 local networkVars = {
 
