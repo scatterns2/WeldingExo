@@ -4,7 +4,7 @@ Script.Load("lua/Weapons/Marine/Claw.lua")
 Script.Load("lua/Weapons/Marine/ExoWelder.lua")
 Script.Load("lua/Weapons/Marine/ExoFlamer.lua")
 Script.Load("lua/Exo.lua")
-
+Script.Load("lua/Mixins/JumpMoveMixin.lua")
 
 kExoModuleCategories = enum{
     "PowerSupply",
@@ -235,27 +235,37 @@ kExoWeaponRightLeftComboModels = {
 
 local networkVars = {
 
-hasThrusters = "boolean",
+	hasThrusters = "boolean",
 
 }
 
 AddMixinNetworkVars(JumpMoveMixin, networkVars)
 
 local orig_Exo_OnCreate = Exo.OnCreate
-
 function Exo:OnCreate()
-orig_Exo_OnCreate(self)
+	self.hasThrusters = false
+	orig_Exo_OnCreate(self)
 
-InitMixin(self, JumpMoveMixin)
+	InitMixin(self, JumpMoveMixin)
 
 end
 
 local orig_Exo_GetCanJump = Exo.GetCanJump 
-
 function Exo:GetCanJump()
-    return not self.hasThrusters
+    
+	return not self.hasThrusters
+
 end
 
+local orig_Exo_GetIsThrusterAllowed = Exo.GetIsThrusterAllowed
+function Exo:GetIsThrusterAllowed()
+	
+	if not self.hasThrusters then
+		return false
+	end
+
+	return orig_Exo_GetIsThrusterAllowed(self)
+end
 Class_Reload("Exo", networkVars)
 
 
