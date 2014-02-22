@@ -3,6 +3,8 @@ Script.Load("lua/Weapons/Marine/Railgun.lua")
 Script.Load("lua/Weapons/Marine/Claw.lua")
 Script.Load("lua/Weapons/Marine/ExoWelder.lua")
 Script.Load("lua/Weapons/Marine/ExoFlamer.lua")
+Script.Load("lua/Weapons/Marine/ExoScanner.lua")
+Script.Load("lua/Weapons/Marine/ExoShield.lua")
 Script.Load("lua/Exo.lua")
 Script.Load("lua/Mixins/JumpMoveMixin.lua")
 
@@ -204,12 +206,12 @@ kExoModuleTypesData = {
         powerCost = 3,
         damageScale = 1.1,
     },
-  /*  [kExoModuleTypes.Scanner] = {
+    [kExoModuleTypes.Scanner] = {
         label = "EXO_UTILITY_SCANNER", tooltip = "EXO_UTILITY_SCANNER_TOOLTIP",
         category = kExoModuleCategories.Utility,
         powerCost = 20,
         mapName = ExoScanner.kMapName,
-    },*/
+    },
 }
 
 kExoWeaponRightLeftComboModels = {
@@ -298,19 +300,37 @@ end
 local orig_Exo_InitExoModel = Exo.InitExoModel
 function Exo:InitExoModel()
 	
-	local leftArmType = kExoModuleTypesData[self.leftArmModuleType].armType
-	local rightArmType = kExoModuleTypes[self.rightArmModuleType].armType
+    local leftArmType = kExoModuleTypesData[self.leftArmModuleType].armType
+    local rightArmType = kExoModuleTypes[self.rightArmModuleType].armType
     local modelInfo = kExoWeaponRightLeftComboModels[rightArmType][leftArmType]
-	local modelName = modelInfo.worldModel
+    local modelName = modelInfo.worldModel
     local graphName = modelInfo.worldAnimGraph
-	self:SetModel(modelName, graphName)
-	
+    self:SetModel(modelName, graphName)
+    self.viewModelName = modelData.viewModel
+    self.viewModelGraphName = modelData.viewAnimGraph
+
+
 end
 
 Class_Reload("Exo", networkVars)
 
+local orig_ExoWeaponHolder_GetViewModelName = ExoWeaponHolder.GetViewModelName
+function ExoWeaponHolder:GetViewModelName()
 
+    local player = self:GetParent()
+    
+    return player.viewModelName
+    
+end
 
+local orig_ExoWeaponHolder_GetAnimationGraphName = ExoWeaponHolder.GetAnimationGraphName
+function ExoWeaponHolder:GetAnimationGraphName()
+
+    local player = self:GetParent()
+
+    return player.viewModelGraphName
+
+end
 
 /*local exoConfig = {
     [kExoModuleSlots.PowerSupply] = kExoModuleTypes.Power1,
