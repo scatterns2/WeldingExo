@@ -1,3 +1,11 @@
+Script.Load("lua/Weapons/Marine/Minigun.lua")
+Script.Load("lua/Weapons/Marine/Railgun.lua")
+Script.Load("lua/Weapons/Marine/Claw.lua")
+Script.Load("lua/Weapons/Marine/ExoWelder.lua")
+Script.Load("lua/Weapons/Marine/ExoFlamer.lua")
+
+
+
 kExoModuleCategories = enum{
     "PowerSupply",
     "Weapon",
@@ -79,115 +87,118 @@ kExoModuleTypesData = {
     [kExoModuleTypes.Power1] = {
         label = "EXO_POWER_1", tooltip = "EXO_POWER_1_TOOLTIP",
         category = kExoModuleCategories.PowerSupply,
-        powerSupply = 20,
+        powerSupply = 15,
         resourceCost = 20,
     },
     [kExoModuleTypes.Power2] = {
         label = "EXO_POWER_2", tooltip = "EXO_POWER_2_TOOLTIP",
         category = kExoModuleCategories.PowerSupply,
         powerSupply = 20,
-        resourceCost = 20,
+        resourceCost = 30,
     },
     [kExoModuleTypes.Power3] = {
         label = "EXO_POWER_3", tooltip = "EXO_POWER_3_TOOLTIP",
         category = kExoModuleCategories.PowerSupply,
-        powerSupply = 20,
-        resourceCost = 20,
+        powerSupply = 25,
+        resourceCost = 40,
     },
     [kExoModuleTypes.Power4] = {
         label = "EXO_POWER_4", tooltip = "EXO_POWER_4_TOOLTIP",
         category = kExoModuleCategories.PowerSupply,
-        powerSupply = 20,
-        resourceCost = 20,
+        powerSupply = 30,
+        resourceCost = 50,
     },
     [kExoModuleTypes.Power5] = {
         label = "EXO_POWER_5", tooltip = "EXO_POWER_5_TOOLTIP",
         category = kExoModuleCategories.PowerSupply,
-        powerSupply = 20,
-        resourceCost = 20,
+        powerSupply = 40,
+        resourceCost = 60,
     },
-     [kExoModuleTypes.Minigun] = {
-        label = "EXO_WEAPON_MINIGUN", tooltip = "EXO_WEAPON_MMINIGUN_TOOLTIP",
-        category = kExoModuleCategories.Weapon,
-        powerCost = 15,
-        mapName = Minigun.kMapName,
-    },
+
 	[kExoModuleTypes.Power6] = {
         label = "EXO_POWER_6", tooltip = "EXO_POWER_6_TOOLTIP",
         category = kExoModuleCategories.PowerSupply,
-        powerSupply = 20,
-        resourceCost = 20,
+        powerSupply = 50,
+        resourceCost = 70,
     },
    
 	[kExoModuleTypes.Claw] = {
-        label = "EXO_WEAPON_CLAW", tooltip = "EXO_WEAPON_CLAW_TOOLTIP",
+        label = "Claw", tooltip = "EXO_WEAPON_CLAW_TOOLTIP",
         category = kExoModuleCategories.Weapon,
         powerCost = 5,
         mapName = Claw.kMapName,
     },
-    [kExoModuleTypes.Railgun] = {
-        label = "EXO_WEAPON_RAILGUN", tooltip = "EXO_WEAPON_RAILGUN_TOOLTIP",
+     [kExoModuleTypes.Welder] = {
+        label = "Welder", tooltip = "EXO_WEAPON_WELDER_TOOLTIP",
+        category = kExoModuleCategories.Weapon,
+        powerCost = 15,
+    }, 
+    [kExoModuleTypes.Shield] = {
+        label = "Shield", tooltip = "EXO_WEAPON_SHIELD_TOOLTIP",
+        category = kExoModuleCategories.Weapon,
+        powerCost = 15,
+        armType = kExoArmTypes.Claw,
+    },     
+	[kExoModuleTypes.Minigun] = {
+        label = "Minigun", tooltip = "EXO_WEAPON_MMINIGUN_TOOLTIP",
+        category = kExoModuleCategories.Weapon,
+        powerCost = 15,
+        mapName = Minigun.kMapName,
+    }, 
+	[kExoModuleTypes.Railgun] = {
+        label = "Railgun", tooltip = "EXO_WEAPON_RAILGUN_TOOLTIP",
         category = kExoModuleCategories.Weapon,
         powerCost = 15,
     },
     [kExoModuleTypes.Flamethrower] = {
-        label = "EXO_WEAPON_FLAMETHROWER", tooltip = "EXO_WEAPON_FLAMETHROWER_TOOLTIP",
+        label = "Flamethrower", tooltip = "EXO_WEAPON_FLAMETHROWER_TOOLTIP",
         category = kExoModuleCategories.Weapon,
         powerCost = 15,
     },
-    [kExoModuleTypes.Welder] = {
-        label = "EXO_WEAPON_WELDER", tooltip = "EXO_WEAPON_WELDER_TOOLTIP",
-        category = kExoModuleCategories.Weapon,
-        powerCost = 15,
-    },
-    [kExoModuleTypes.Shield] = {
-        label = "EXO_WEAPON_SHIELD", tooltip = "EXO_WEAPON_SHIELD_TOOLTIP",
-        category = kExoModuleCategories.Weapon,
-        powerCost = 15,
-        armType = kExoArmTypes.Claw,
-    },
-    [kExoModulesTypes.Armor1] = {
+
+
+    [kExoModuleTypes.Armor1] = {
         label = "EXO_ARMOR_1", tooltip = "EXO_ARMOR_1_TOOLTIP",
         category = kExoModuleCategories.Armor,
         powerCost = 3,
         armorBonus = 100,
     },
-    [kExoModulesTypes.Armor2] = {
+    [kExoModuleTypes.Armor2] = {
         label = "EXO_ARMOR_2", tooltip = "EXO_ARMOR_2_TOOLTIP",
         category = kExoModuleCategories.Armor,
         powerCost = 3,
         armorBonus = 100,
     },
-	[kExoModulesTypes.Armor3] = {
+	[kExoModuleTypes.Armor3] = {
         label = "EXO_ARMOR_3", tooltip = "EXO_ARMOR_3_TOOLTIP",
         category = kExoModuleCategories.Armor,
         powerCost = 3,
         armorBonus = 100,
     },
-    [kExoModulesTypes.Damage1] = {
+    [kExoModuleTypes.Damage1] = {
         label = "EXO_DAMAGE_1", tooltip = "EXO_DAMAGE_1_TOOLTIP",
         category = kExoModuleCategories.Damage,
         powerCost = 3,
         damageScale = 1.1,
     },
-	[kExoModulesTypes.Damage2] = {
+	[kExoModuleTypes.Damage2] = {
         label = "EXO_DAMAGE_2", tooltip = "EXO_DAMAGE_2_TOOLTIP",
         category = kExoModuleCategories.Damage,
         powerCost = 3,
         damageScale = 1.1,
     },
-	[kExoModulesTypes.Damage3] = {
+	[kExoModuleTypes.Damage3] = {
         label = "EXO_DAMAGE_3", tooltip = "EXO_DAMAGE_3_TOOLTIP",
         category = kExoModuleCategories.Damage,
         powerCost = 3,
         damageScale = 1.1,
     },
-    [kExoModulesTypes.Scanner] = {
+  /*  [kExoModuleTypes.Scanner] = {
         label = "EXO_UTILITY_SCANNER", tooltip = "EXO_UTILITY_SCANNER_TOOLTIP",
         category = kExoModuleCategories.Utility,
         powerCost = 20,
         mapName = ExoScanner.kMapName,
-    },
+    },*/
 }
 
 kExoWeaponRightLeftComboModels = {
