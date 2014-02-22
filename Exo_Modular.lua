@@ -127,16 +127,22 @@ kExoModuleTypesData = {
         category = kExoModuleCategories.Weapon,
         powerCost = 5,
         mapName = Claw.kMapName,
+        armType = kExoArmTypes.Claw,
+
     },
      [kExoModuleTypes.Welder] = {
         label = "Welder", tooltip = "EXO_WEAPON_WELDER_TOOLTIP",
         category = kExoModuleCategories.Weapon,
         powerCost = 15,
+        mapName = ExoWelder.kMapName,
+        armType = kExoArmTypes.Railgun,
+
     }, 
     [kExoModuleTypes.Shield] = {
         label = "Shield", tooltip = "EXO_WEAPON_SHIELD_TOOLTIP",
         category = kExoModuleCategories.Weapon,
         powerCost = 15,
+        mapName = ExoShield.kMapName,
         armType = kExoArmTypes.Claw,
     },     
 	[kExoModuleTypes.Minigun] = {
@@ -144,16 +150,21 @@ kExoModuleTypesData = {
         category = kExoModuleCategories.Weapon,
         powerCost = 15,
         mapName = Minigun.kMapName,
+        armType = kExoArmTypes.Minigun,
     }, 
 	[kExoModuleTypes.Railgun] = {
         label = "Railgun", tooltip = "EXO_WEAPON_RAILGUN_TOOLTIP",
         category = kExoModuleCategories.Weapon,
         powerCost = 15,
+        mapName = Railgun.kMapName,
+        armType = kExoArmTypes.Railgun,
     },
     [kExoModuleTypes.Flamethrower] = {
         label = "Flamethrower", tooltip = "EXO_WEAPON_FLAMETHROWER_TOOLTIP",
         category = kExoModuleCategories.Weapon,
         powerCost = 15,
+        mapName = ExoFlamer.kMapName,
+        armType = kExoArmTypes.Railgun,
     },
 
 
@@ -253,9 +264,11 @@ local orig_Exo_OnCreate = Exo.OnCreate
 function Exo:OnCreate()
 	
 	orig_Exo_OnCreate(self)
+    
+    InitMixin(self, JumpMoveMixin)
+
 	self.rightArmModuleType = kExoModuleTypes.Minigun
 	self.leftArmModuleType = kExoModuleTypes.Minigun
-	InitMixin(self, JumpMoveMixin)
 	self.hasThrusters = false
 
 end
@@ -288,8 +301,8 @@ function Exo:InitExoModel()
 	local leftArmType = kExoModuleTypesData[self.leftArmModuleType].armType
 	local rightArmType = kExoModuleTypes[self.rightArmModuleType].armType
     local modelInfo = kExoWeaponRightLeftComboModels[rightArmType][leftArmType]
-	local modelName = modelInfo.modelName
-    local graphName = modelInfo.animGraph
+	local modelName = modelInfo.worldModel
+    local graphName = modelInfo.worldAnimGraph
 	self:SetModel(modelName, graphName)
 	
 end
