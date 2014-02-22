@@ -205,25 +205,31 @@ kExoWeaponRightLeftComboModels = {
     [kExoArmTypes.Minigun] = {
         [kExoArmTypes.Minigun] = {
             worldModel = "models/marine/exosuit/exosuit_mm.model",
-            animGraph  = "models/marine/exosuit/exosuit_mm.animation_graph",
-          //  viewModel  = not sure..,
+            worldAnimGraph  = "models/marine/exosuit/exosuit_mm.animation_graph",
+            viewModel  = "models/marine/exosuit/exosuit_mm_view.model",
+			viewAnimGraph = "models/marine/exosuit/exosuit_mm_view.animation_graph",
         },
         [kExoArmTypes.Claw] = {
-           // worldModel = etc
-            //animGraph  = etc
-            //viewModel  = etc,
+            worldModel = "models/marine/exosuit/exosuit_cm.model",
+            worldAnimGraph  = "models/marine/exosuit/exosuit_cm.animation_graph",
+            viewModel  = "models/marine/exosuit/exosuit_cm_view.model",
+			viewAnimGraph   = "models/marine/exosuit/exosuit_cm_view.animation_graph",
         },
     },
     [kExoArmTypes.Railgun] = {
         [kExoArmTypes.Railgun] = {
-		   // worldModel = etc
-           // animGraph  = etc
-           // viewModel  = etc,
+		    worldModel = "models/marine/exosuit/exosuit_rr.model",
+            worldAnimGraph  = "models/marine/exosuit/exosuit_rr.animation_graph",
+            viewModel  = "models/marine/exosuit/exosuit_rr_view.model",
+			viewAnimGraph   = "models/marine/exosuit/exosuit_rr_view.animation_graph",
+
         },
         [kExoArmTypes.Claw] = {
-		   // worldModel = etc
-           // animGraph  = etc
-           // viewModel  = etc,
+            worldModel = "models/marine/exosuit/exosuit_cr.model",
+            worldAnimGraph  = "models/marine/exosuit/exosuit_cr.animation_graph",
+            viewModel  = "models/marine/exosuit/exosuit_cr_view.model",
+			viewAnimGraph   = "models/marine/exosuit/exosuit_cr_view.animation_graph",
+
         },
     },
     [kExoArmTypes.Claw] = {
@@ -235,18 +241,22 @@ kExoWeaponRightLeftComboModels = {
 
 local networkVars = {
 
+	rightArmModuleType = "enum kExoModuleTypes",
+	leftArmModuleType = "enum kExoModuleTypes",
 	hasThrusters = "boolean",
-
+    armorBonus = "float (0 to 2045 by 1)",
 }
 
 AddMixinNetworkVars(JumpMoveMixin, networkVars)
 
 local orig_Exo_OnCreate = Exo.OnCreate
 function Exo:OnCreate()
-	self.hasThrusters = false
+	
 	orig_Exo_OnCreate(self)
-
+	self.rightArmModuleType = kExoModuleTypes.Minigun
+	self.leftArmModuleType = kExoModuleTypes.Minigun
 	InitMixin(self, JumpMoveMixin)
+	self.hasThrusters = false
 
 end
 
@@ -259,14 +269,34 @@ end
 
 local orig_Exo_GetIsThrusterAllowed = Exo.GetIsThrusterAllowed
 function Exo:GetIsThrusterAllowed()
-	
+
 	if not self.hasThrusters then
 		return false
 	end
 
 	return orig_Exo_GetIsThrusterAllowed(self)
 end
+
+local orig_Exo_GetArmorAmount = Exo.GetArmorAmount 
+function Exo:GetArmorAmount()
+	return 1000 //kExosuitArmor + self.armorBonus
+end
+
+local orig_Exo_InitExoModel = Exo.InitExoModel
+function Exo:InitExoModel()
+	
+	local leftArmType = kExoModuleTypesData[self.leftArmModuleType].armType
+	local rightArmType = kExoModuleTypes[self.rightArmModuleType].armType
+    local modelInfo = kExoWeaponRightLeftComboModels[rightArmType][leftArmType]
+	local modelName = modelInfo.modelName
+    local graphName = modelInfo.animGraph
+	self:SetModel(modelName, graphName)
+	
+end
+
 Class_Reload("Exo", networkVars)
+
+
 
 
 /*local exoConfig = {
