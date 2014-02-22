@@ -312,6 +312,32 @@ function Exo:InitExoModel()
 
 end
 
+local orig_Exo_InitWeapons = Exo.InitWeapons
+function Exo:InitWeapons()
+
+    Player.InitWeapons(self)
+    
+    local weaponHolder = self:GetWeapon(ExoWeaponHolder.kMapName)
+    
+    if not weaponHolder then
+        weaponHolder = self:GiveItem(ExoWeaponHolder.kMapName, false)   
+    end    
+    
+    local leftArmModuleTypeData = kExoModuleTypesData[self.leftArmModuleType]
+    local rightArmModuleTypeData = kExoModuleTypesData[self.rightArmModuleType]
+
+    
+    Print("Warning: incorrect layout set for exosuit")
+    weaponHolder:SetWeapons(leftArmModuleTypeData.kMapName, rightArmModuleTypeData.kMapName)
+        
+   
+    
+    weaponHolder:TriggerEffects("exo_login")
+    self.inventoryWeight = weaponHolder:GetInventoryWeight(self)
+    self:SetActiveWeapon(ExoWeaponHolder.kMapName)
+    StartSoundEffectForPlayer(kDeploy2DSound, self)
+
+
 Class_Reload("Exo", networkVars)
 
 local orig_ExoWeaponHolder_GetViewModelName = ExoWeaponHolder.GetViewModelName
