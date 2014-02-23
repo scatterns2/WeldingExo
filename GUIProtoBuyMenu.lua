@@ -635,30 +635,16 @@ function GUIProtoBuyMenu:_InitializeExoButtons()
        
 	for moduleType, moduleTypeData in pairs(kExoModuleTypesData) do
         
-		if moduleTypeData.category == kExoModuleSlotsData[panelSlotType].category then
+        local buttonCount = 0
 
-			
-			if panelData.title == "RIGHT ARM" then
-			  PosX = 100
-			  PosY = 225
-			  offsetX = 0
-			  offsetY = ((buttonNum-1)%eggsPerRow)*30 
-			  
-			elseif panelData.title == "POWER OUTPUT" then
-			  PosX =  250
-			  PosY = 75
-			  offsetX = ((buttonNum-1)%eggsPerRow)*100 
-			  offsetY = 0
-			  
-			elseif panelData.title == "LEFT ARM" then
-			  PosX = 750
-			  PosY = 225
-			  offsetX = 0
-			  offsetY = ((buttonNum-1)%eggsPerRow)*30 
-			  
-			end
-				
-			 
+        if moduleTypeData.category == kExoModuleSlotsData[panelSlotType].category then
+            
+            local PosX = panelData.x
+            local PosY = panelData.y
+            local offsetX = 0
+            local offsetY = buttonCount*30
+            buttonCount = buttonCount+1
+
 			local boxButton = GUIManager:CreateGraphicItem()
 			boxButton:SetTexture( "ui/menu/repeating_bg.dds" )
 			boxButton:SetColor(kEquippedColor)
