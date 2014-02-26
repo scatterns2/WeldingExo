@@ -10,6 +10,48 @@ Script.Load("lua/Mixins/JumpMoveMixin.lua")
 Script.Load("lua/Exo_ModularData.lua")
 Script.Load("lua/Exo_ModularNetworkMessages.lua")
 
+if Client then
+    
+    local function HandleReturns(...)
+        local n = select('#', ...)
+        local t = { n = n }
+        for i = 1, n do t[i] = select(i, ...) end
+        return t, n
+    end
+     
+    do
+        VVV = (VVV or 0)+1
+        local ver = VVV
+        Event.Hook("Console_lc",function(...)
+            if ver ~= VVV then return end
+            local code = table.concat({...},' ')
+            local func, err = loadstring(code)
+            local res
+            if func then
+                res = HandleReturns(xpcall(
+                    function() return func() end,
+                    function(err)
+                        return tostring(err).."\n"..tostring(debug.traceback())
+                    end
+                ))
+                if res[1] then
+                    Print("%s", table.concat(res, " ", 2, res.n))
+                else
+                    Print("%s", tostring(res[2]))
+                end
+            else
+                Print("%s", tostring(err))
+            end
+        end)
+         
+        Event.Hook("Console_lcl",function(...)
+        if ver ~= VVV then return end
+        Script.Load(table.concat({...},' '))
+        end)
+    end
+end
+
+
 if Server then
     local function OnMessageExoModularBuy(client, message)
     
@@ -81,20 +123,18 @@ if Server then
         
         local exo = self:Replace(Exo.kMapName, self:GetTeamNumber(), false, spawnPoint, exoVariables)
         StorePrevPlayer(self, exo)        
-                       
-        if exo then                
-            for i = 1, #weapons do
-                exo:StoreWeapon(weapons[i])
-            end            
-        end
         
+        if not exo then
+            return
+        end
+
+        for i = 1, #weapons do
+            exo:StoreWeapon(weapons[i])
+        end
+
         exo:TriggerEffects("spawn_exo")
                 
-          
-            
-        
-        
-        
+       
     end
 
     
@@ -130,10 +170,32 @@ function Exo:OnCreate()
 	orig_Exo_OnCreate(self)
     
     InitMixin(self, JumpMoveMixin)
+	//self.rightArmModuleType = kExoModuleTypes.Welder
+	//self.leftArmModuleType = kExoModuleTypes.Welder
+    
+    self.leftArmModuleType = self.leftArmModuleType or kExoModuleTypes.Claw
+    self.rightArmModuleType = self.rightArmModuleType or kExoModuleTypes.Minigun
 
-	self.rightArmModuleType = kExoModuleTypes.Welder
-	self.leftArmModuleType = kExoModuleTypes.Welder
-	self.hasThrusters = false
+    
+    if Server then
+    local shorthandMap = {
+        c = kExoModuleTypes.Claw,
+        w = kExoModuleTypes.Welder,
+        s = kExoModuleTypes.Shield,
+        m = kExoModuleTypes.Minigun,
+        r = kExoModuleTypes.Railgun,
+        f = kExoModuleTypes.Flamethrower,
+    }
+    Event.Hook("Console_xxx", function(client, lm, rm)
+        local player = client:GetControllingPlayer()
+        local extraValues = {
+            leftArmModuleType  = shorthandMap[tostring(lm)] or kExoModuleTypes.Claw,
+            rightArmModuleType = shorthandMap[tostring(rm)] or kExoModuleTypes.Minigun,
+        }
+        player:Replace("exo", player:GetTeamNumber(), false, nil, extraValues)
+    end)
+    end
+    Print("poo")
 
 end
 
@@ -154,9 +216,11 @@ function Exo:GetIsThrusterAllowed()
 	return orig_Exo_GetIsThrusterAllowed(self)
 end
 
+local armorBonus = 150
+
 local orig_Exo_GetArmorAmount = Exo.GetArmorAmount 
 function Exo:GetArmorAmount()
-	return 1000 //kExosuitArmor + self.armorBonus
+	return kExosuitArmor + self.armorBonus
 end
 
 local orig_Exo_InitExoModel = Exo.InitExoModel
@@ -198,6 +262,28 @@ function Exo:InitWeapons()
     self:SetActiveWeapon(ExoWeaponHolder.kMapName)
     StartSoundEffectForPlayer(kDeploy2DSound, self)
     
+end
+
+function Exo:GetCanJump()
+    return not self:GetIsWebbed() and self:GetIsOnGround() 
+end
+
+function Exo:GetSlowOnLand()
+    return true
+end
+
+function Exo:GetWebSlowdownScalar()
+    return 0.6
+end
+
+function Exo:OnAdjustModelCoords(modelCoords)
+    local coords = modelCoords
+
+       coords.xAxis = coords.xAxis * 1
+        coords.yAxis = coords.yAxis * 1
+        coords.zAxis = coords.zAxis * 1
+  
+    return coords
 end
 
 Class_Reload("Exo", networkVars)
