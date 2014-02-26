@@ -1,3 +1,11 @@
+Script.Load("lua/Weapons/Marine/Minigun.lua")
+Script.Load("lua/Weapons/Marine/Railgun.lua")
+Script.Load("lua/Weapons/Marine/Claw.lua")
+Script.Load("lua/Weapons/Marine/ExoWelder.lua")
+Script.Load("lua/Weapons/Marine/ExoFlamer.lua")
+Script.Load("lua/Weapons/Marine/ExoScan.lua")
+Script.Load("lua/Weapons/Marine/ExoShield.lua")
+
 kExoModuleCategories = enum{
     "PowerSupply",
     "Weapon",
@@ -48,6 +56,7 @@ kExoModuleSlotsData = {
 }
 
 kExoModuleTypes = enum{
+    "None",
     "Power1",
     "Power2",
     "Power3",
