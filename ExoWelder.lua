@@ -1,3 +1,11 @@
+// lua\Weapons\Marine\Welder.lua
+//
+//    Created by:   Andreas Urwalek (a_urwa@sbox.tugraz.at)
+//
+//    Weapon used for repairing structures and armor of friendly players (marines, exosuits, jetpackers).
+//    Uses hud slot 3 (replaces axe)
+//
+// ========= For more information, visit us at http://www.unknownworlds.com =====================
 
 function _D(...)
     local t = {'['..debug.getinfo(2, 'l').currentline..']', ...}
@@ -6,6 +14,7 @@ function _D(...)
     end
     Print("%s", table.concat(t, ' '))
 end
+
 
 
 Script.Load("lua/Weapons/Weapon.lua")
@@ -39,7 +48,7 @@ local networkVars =
 AddMixinNetworkVars(ExoWeaponSlotMixin, networkVars)
 AddMixinNetworkVars(LiveMixin, networkVars)
 
-local kWeldRange = 25
+local kWeldRange = 4
 local kWelderEffectRate = 0.45
 
 local kFireLoopingSound = PrecacheAsset("sound/NS2.fev/marine/welder/weld")
@@ -90,6 +99,22 @@ function ExoWelder:OnTag(tagName)
 
 end
 
+
+if client then
+
+	local cinematic = Client.CreateCinematic(RenderScene.Zone_Default)
+	cinematic:SetCinematic("cinematics/marine/welder/welder_muzzle.cinematic")
+	local cinematicCoords = self:GetCoords()
+	local scale = 5
+			if scale then
+				coords.xAxis = coords.xAxis * scale
+				coords.yAxis = coords.yAxis * scale
+				coords.zAxis = coords.zAxis * scale
+			end
+	cinematic:SetCoord(coords)
+
+end	
+	
 function ExoWelder:GetIsAffectedByWeaponUpgrades()
     return false
 end
@@ -121,12 +146,18 @@ function ExoWelder:OnPrimaryAttack(player)
     end
     
     if not self.timeLastWeldEffect or self.timeLastWeldEffect + kWelderEffectRate < Shared.GetTime() then
-    
-       player:TriggerEffects("exowelder_muzzle", { [kEffectParamScale] = 20 })
 
-
-        self.timeLastWeldEffect = Shared.GetTime()
+		if self:GetIsLeftSlot() then
         
+			player:TriggerEffects("leftexowelder_muzzle", { effecthostcoords = coords})
+            
+        elseif self:GetIsRightSlot() then
+        
+            player:TriggerEffects("rightexowelder_muzzle", { effecthostcoords = coords})
+            
+        end
+                        self.timeLastWeldEffect = Shared.GetTime()
+
     end
     
 end
@@ -164,16 +195,16 @@ function ExoWelder:GetRange()
     return kWeldRange
 end	
 
-function ExoWelder:GetRepairRate(repairedEntity)
+//function ExoWelder:GetRepairRate(repairedEntity)
 
-    local repairRate = kPlayerWeldRate
-    if repairedEntity.GetReceivesStructuralDamage and repairedEntity:GetReceivesStructuralDamage() then
-        repairRate = kStructureWeldRate
-    end
+  //  local repairRate = kPlayerWeldRate
+ //   if repairedEntity.GetReceivesStructuralDamage and repairedEntity:GetReceivesStructuralDamage() then
+    //    repairRate = kStructureWeldRate
+  //  end
     
-    return repairRate
+   // return repairRate
     
-end
+//end
 
 function ExoWelder:GetMeleeBase()
     return 2, 2
@@ -183,9 +214,15 @@ function ExoWelder:GetMeleeOffset()
     return 0.0
 end
 
+//local function PrioritizeDamagedFriends(weapon, player, newTarget, oldTarget)
+ //    _D("WTF", weapon, player)
+  //  return not oldTarget or (HasMixin(newTarget, "Team") and newTarget:GetTeamNumber() == player:GetTeamNumber() and (HasMixin(newTarget, "Weldable") and newTarget:GetCanBeWelded(player)))
+//end
+
 local function PrioritizeDamagedFriends(weapon, player, newTarget, oldTarget)
-    return not oldTarget or (HasMixin(newTarget, "Team") and newTarget:GetTeamNumber() == player:GetTeamNumber() and (HasMixin(newTarget, "Weldable") and newTarget:GetCanBeWelded(weapon)))
+    return true
 end
+
 
 function ExoWelder:PerformWeld(player)
 
@@ -196,17 +233,31 @@ function ExoWelder:PerformWeld(player)
     
     if didHit and target and HasMixin(target, "Live") then
         
-        if GetAreEnemies(player, target) then
-            self:DoDamage(kWelderDamagePerSecond * kWelderFireDelay, target, endPoint, attackDirection)
-            success = true     
-        elseif player:GetTeamNumber() == target:GetTeamNumber() and HasMixin(target, "Weldable") then
+        if HasMixin(target, "Team")and GetAreEnemies(player, target) then
+           // self:DoDamage(kWelderDamagePerSecond * kWelderFireDelay, target, endPoint, attackDirection)
+            //success = true     
+         elseif HasMixin(target, "Team") and player:GetTeamNumber() == target:GetTeamNumber() and HasMixin(target, "Weldable") then
+
         
             if target:GetHealthScalar() < 1 then
                 
                 local prevHealthScalar = target:GetHealthScalar()
                 local prevHealth = target:GetHealth()
                 local prevArmor = target:GetArmor()
-                target:OnWeld(self, kWelderFireDelay, player)
+               // target:OnWeld(self, kWelderFireDelay, player)
+                 if target:GetCanBeWelded(player) then
+                    if target.OnWeldOverride then
+                        target:OnWeldOverride(player, kWelderFireDelay)
+                    else
+                        target:AddHealth(self:GetRepairRate(target) * kWelderFireDelay)
+
+                    end
+                    if player and player.OnWeldTarget then
+                        player:OnWeldTarget(target)
+                    end
+                  end
+
+
                 success = prevHealthScalar ~= target:GetHealthScalar()
                 
                 if success then
@@ -221,7 +272,7 @@ function ExoWelder:PerformWeld(player)
                 
             end
             
-            if HasMixin(target, "Construct") and target:GetCanConstruct(player) then
+            if HasMixin(target, "Construct")  then
                 target:Construct(kWelderFireDelay, player)
             end
             
@@ -232,6 +283,17 @@ function ExoWelder:PerformWeld(player)
     if success then    
         return endPoint
     end
+    
+end
+
+function ExoWelder:GetRepairRate(repairedEntity)
+
+    local repairRate = kPlayerWeldRate
+    if repairedEntity.GetReceivesStructuralDamage and repairedEntity:GetReceivesStructuralDamage() then
+        repairRate = kStructureWeldRate
+    end
+    
+    return repairRate
     
 end
 
@@ -293,7 +355,7 @@ function ExoWelder:OnUpdateRender()
                     className = trace.entity:GetClassName()
                 end
                 
-                //self.TriggerEffects("welder_hit", { classname = className, effecthostcoords = coords})
+                parent:TriggerEffects("exowelder_hit", { classname = className, effecthostcoords = coords})
                 
             end
             
@@ -346,43 +408,36 @@ function ExoWelder:OnTag(tagName)
 end
 
 
-//if Client then
 
-  //  local kAttachPoints = { [ExoWeaponHolder.kSlotNames.Left] = "fxnode_l_railgun_muzzle",[ExoWeaponHolder.kSlotNames.Right] = "fxnode_r_railgun_muzzle" }
-   // local kMuzzleEffectName = PrecacheAsset("cinematics/marine/welder/welder_muzzle.cinematic")
 
-  //  function ExoWelder:OnClientPrimaryAttacking()
-    
-   //     local parent = self:GetParent()
-        
-    //    if parent then
-        //    CreateMuzzleCinematic(self,  kMuzzleEffectName, kAttachPoints[self:GetExoWeaponSlot()] , parent)
-       // end
-        
-   // end
-	
-   // function ExoWelder:GetIsActive()
-    //    return true
-   // end    
-          
-    
-   // function ExoWelder:GetPrimaryAttacking()
-   //     return self.welding
-   // end
-    
-   
-//end
+
+
 
 GetEffectManager():AddEffectData("ScattersModEffects", {
-    exowelder_muzzle = {
+    leftexowelder_muzzle = {
         welderMuzzleEffects =
         {
-            {viewmodel_cinematic = "cinematics/marine/welder/welder_muzzle.cinematic", attach_point = "fxnode_r_railgun_muzzle"},
-            {weapon_cinematic = "cinematics/marine/welder/welder_muzzle.cinematic", attach_point = "fxnode_rrailgunmuzzle"},
+            {viewmodel_cinematic = "cinematics/marine/welder/exowelder_muzzle.cinematic", attach_point = "fxnode_l_railgun_muzzle"},
+            {weapon_cinematic = "cinematics/marine/welder/exowelder_muzzle.cinematic", attach_point = "fxnode_lrailgunmuzzle"},
+        },
+    },
+    rightexowelder_muzzle = {
+        welderMuzzleEffects =
+        {
+            {viewmodel_cinematic = "cinematics/marine/welder/exowelder_muzzle.cinematic", attach_point = "fxnode_r_railgun_muzzle"},
+            {weapon_cinematic = "cinematics/marine/welder/exowelder_muzzle.cinematic", attach_point = "fxnode_rrailgunmuzzle"},
+        },
+    },
+    exowelder_hit =
+    {
+        welderHitEffects =
+        {
+            {cinematic = "cinematics/marine/welder/exowelder_hit.cinematic"},
         },
     },
 })
     
+
  
     
 
